@@ -1,0 +1,44 @@
+#+AUTHOR: Simon Stoltze
+#+EMAIL: Simon.Stoltze@ufst.dk
+#+DATE: 2020-05-09
+#+OPTIONS: toc:nil title:nil author:nil email:nil date:nil creator:nil
+
+* Nix tutorial for Haskell development
+Blindly following [[https://maybevoid.com/posts/2019-01-27-getting-started-haskell-nix.html][this post]].
+
+To setup the directory, run the following:
+
+Setup cabal environment:
+#+begin_src shell :results output silent
+nix-shell --pure -p ghc cabal-install --run "cabal init"
+#+end_src
+
+Translate the cabal environement to a nix file by saving the output of the following in a [[file:default.nix]] file
+#+begin_src shell :results output file :file default.nix
+nix-shell --pure -p cabal2nix --run "cabal2nix ."
+#+end_src
+
+#+RESULTS:
+[[file:default.nix]]
+
+This should set up the nix environment with the correct packages. Rerun =cabal2nix= when the cabal file is updated.
+
+To build executables, run =nix-build=. The [[file:default.nix]] produced by =cabal2nix= cannot be built directly as it expects some arguments, so we create a (basically boilerplate, rarely changed) file [[file:release.nix]] to build against the stable nix repository and build the project with:
+#+begin_src shell :results output silent
+nix-build release.nix
+#+end_src
+This fails if you do not create a [[file:LICENSE]] file.
+
+To enter a shell with the dependencies from [[file:default.nix]], use the =--attr env= flag. This does not have =cabal= unless it is installed globally.
+#+begin_src shell
+nix-shell --attr env release.nix
+#+end_src
+
+To get access to =cabal=, we create a [[file:shell.nix]] that adds =cabal-install= to the packages imported from [[file:release.nix]]. The repl can then be run with
+#+begin_src shell
+nix-shell --pure shell.nix --run "cabal repl"
+#+end_src
+
+** Stack
+To combine nix and stack, follow the guide at [[https://docs.haskellstack.org/en/stable/nix_integration/]]
+This makes stack use nix for building the non-Haskell dependencies of packages, but will probably integrate better with editors that speak to stack.
