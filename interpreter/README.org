@@ -1,0 +1,6 @@
+#+AUTHOR: Simon Stoltze
+#+EMAIL: Simon.Stoltze@ufst.dk
+#+DATE: 2020-08-07
+#+OPTIONS: toc:nil title:nil author:nil email:nil date:nil creator:nil
+
+Blindly following [[https://blog.jle.im/entry/interpreters-a-la-carte-duet.html][this post]] about interpreters in Haskell.

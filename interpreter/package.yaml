@@ -1,0 +1,55 @@
+name:                interpreter
+version:             0.1.0.0
+github:              "sstoltze/interpreter"
+license:             BSD3
+author:              "Simon Stoltze"
+maintainer:          "sstoltze@gmail.com"
+copyright:           "2020 Simon Stoltze"
+
+extra-source-files:
+- README.org
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/sstoltze/interpreter#readme>
+
+dependencies:
+- base >= 4.9 && < 4.11
+- pointedlist
+- operational
+- free
+- containers
+- lens
+- mtl
+- transformers
+
+library:
+  source-dirs: src
+
+executables:
+  interpreter-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - interpreter
+
+tests:
+  interpreter-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - interpreter
