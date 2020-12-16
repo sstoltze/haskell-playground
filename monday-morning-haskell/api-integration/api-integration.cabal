@@ -1,0 +1,63 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: f175d0f61da7ebe10c70b965701c9f6ef267f07e4effb1470aadb182affc3a3e
+
+name:           api-integration
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/sstoltze/api-integration#readme>
+homepage:       https://github.com/sstoltze/api-integration#readme
+bug-reports:    https://github.com/sstoltze/api-integration/issues
+author:         Simon Stoltze
+maintainer:     sstoltze@gmail.com
+copyright:      2020 Simon Stoltze
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/sstoltze/api-integration
+
+library
+  exposed-modules:
+      Lib
+      Main
+  other-modules:
+      Paths_api_integration
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable api-integration-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_api_integration
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      api-integration
+    , base >=4.7 && <5
+  default-language: Haskell2010
+
+test-suite api-integration-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_api_integration
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      api-integration
+    , base >=4.7 && <5
+  default-language: Haskell2010

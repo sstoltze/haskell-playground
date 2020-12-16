@@ -1,0 +1,54 @@
+name:                domain-modelling
+version:             0.1.0.0
+github:              "sstoltze/domain-modelling"
+license:             BSD3
+author:              "Simon Stoltze"
+maintainer:          "sstoltze@gmail.com"
+copyright:           "2020 Simon Stoltze"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/sstoltze/domain-modelling#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- text
+- random
+- containers
+- Decimal
+- mtl
+# - fixplate
+
+library:
+  source-dirs: src
+
+executables:
+  domain-modelling-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - domain-modelling
+
+tests:
+  domain-modelling-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - domain-modelling

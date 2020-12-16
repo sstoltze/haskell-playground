@@ -1,0 +1,85 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: c69312da04aeb33e5a8930f0010d3cd58aed50089fb4887e28ea05974ac2a45b
+
+name:           domain-modelling
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/sstoltze/domain-modelling#readme>
+homepage:       https://github.com/sstoltze/domain-modelling#readme
+bug-reports:    https://github.com/sstoltze/domain-modelling/issues
+author:         Simon Stoltze
+maintainer:     sstoltze@gmail.com
+copyright:      2020 Simon Stoltze
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/sstoltze/domain-modelling
+
+library
+  exposed-modules:
+      Database
+      Demo
+      Lib
+      PrettyPrint
+      Project
+      Reporting
+  other-modules:
+      Paths_domain_modelling
+  hs-source-dirs:
+      src
+  build-depends:
+      Decimal
+    , base >=4.7 && <5
+    , containers
+    , fixplate
+    , mtl
+    , random
+    , text
+  default-language: Haskell2010
+
+executable domain-modelling-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_domain_modelling
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Decimal
+    , base >=4.7 && <5
+    , containers
+    , domain-modelling
+    , fixplate
+    , mtl
+    , random
+    , text
+  default-language: Haskell2010
+
+test-suite domain-modelling-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_domain_modelling
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Decimal
+    , base >=4.7 && <5
+    , containers
+    , domain-modelling
+    , fixplate
+    , mtl
+    , random
+    , text
+  default-language: Haskell2010
