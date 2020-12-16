@@ -1,0 +1,50 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 7c952f862b185620a9a8d8d62c2ff8082736b1037bb26b9c689a66e421addb48
+
+name:           microkanren
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/sstoltze/microkanren#readme>
+homepage:       https://github.com/sstoltze/microkanren#readme
+bug-reports:    https://github.com/sstoltze/microkanren/issues
+author:         Simon Stoltze
+maintainer:     sstoltze@gmail.com
+copyright:      2020 Simon Stoltze
+license:        BSD3
+build-type:     Simple
+extra-source-files:
+    README.org
+
+source-repository head
+  type: git
+  location: https://github.com/sstoltze/microkanren
+
+library
+  exposed-modules:
+      Lib
+      Types
+  other-modules:
+      Paths_microkanren
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , mtl
+  default-language: Haskell2010
+
+executable microkanren-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_microkanren
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , microkanren
+    , mtl
+  default-language: Haskell2010

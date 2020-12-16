@@ -1,0 +1,3 @@
+
+* μKanren
+An implementation of μKanren, a realtional programming language, as described in [[http://webyrd.net/scheme-2013/papers/HemannMuKanren2013.pdf][this article]] and various blog posts, e.g. [[https://www.philipzucker.com/yet-another-microkanren-in-julia/]] or [[http://mullr.github.io/micrologic/literate.html]].
