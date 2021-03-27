@@ -1,0 +1,51 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 7de324c3a21e93c7b1f37d0347f7e6935dcd8de7ffc09840c4e4ac170edcb400
+
+name:           graph-hs
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/sstoltze/graph-hs#readme>
+homepage:       https://github.com/sstoltze/graph-hs#readme
+bug-reports:    https://github.com/sstoltze/graph-hs/issues
+author:         Simon Stoltze
+maintainer:     sstoltze@gmail.com
+copyright:      2021 Simon Stoltze
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/sstoltze/graph-hs
+
+library
+  exposed-modules:
+      Graph
+      Svg
+      Types
+  other-modules:
+      Paths_graph_hs
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable graph-hs-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_graph_hs
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , graph-hs
+  default-language: Haskell2010
