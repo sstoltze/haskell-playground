@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7de324c3a21e93c7b1f37d0347f7e6935dcd8de7ffc09840c4e4ac170edcb400
+-- hash: 4298c9b89f2652bd3fb239cd97f9b405aa652ac1a7f455bea74eccf9c4a17138
 
 name:           graph-hs
 version:        0.1.0.0
@@ -18,7 +18,6 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    README.md
     ChangeLog.md
 
 source-repository head
