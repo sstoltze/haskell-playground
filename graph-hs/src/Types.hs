@@ -9,7 +9,8 @@ mkColour :: Int -> Int -> Int -> Colour
 mkColour r g b = Colour { colourRed = r, colourGreen = g, colourBlue = b }
 
 hexColour :: Colour -> String
-hexColour (Colour { colourRed = r, colourGreen = g, colourBlue = b})= "#" ++ hex r ++ hex g ++ hex b
+hexColour (Colour { colourRed = r, colourGreen = g, colourBlue = b}) =
+  "#" ++ hex r ++ hex g ++ hex b
   where
     hex n = digitToHex (n `div` 16) : digitToHex (n `mod` 16) : []
     digitToHex n = "0123456789ABCDEF" !! n
@@ -31,22 +32,28 @@ scalePoint d (x,y) = (x, d * y)
 mkRange :: (Enum a, Fractional a) => a -> a -> a -> [a]
 mkRange start end numberOfPoints = [start, start+step .. end]
   where
-    step = (end - start) / (numberOfPoints-1)
+    step = (end - start) / (numberOfPoints - 1)
 
 uniformPoints :: (Enum a, Fractional a) => a -> a -> [a] -> [Point a]
-uniformPoints start end ys =
-  let len = length ys
-      xs = mkRange start end (fromIntegral len)
-  in zipWith mkPoint xs ys
+uniformPoints start end ys = zipWith mkPoint xs ys
+  where
+    len = length ys
+    xs = mkRange start end (fromIntegral len)
+
+data DatasetType = Line
+                 | Circles
+                 deriving (Show, Eq)
 
 data Dataset a = Dataset { datasetPoints :: [Point a]
                          , datasetColour :: Colour
+                         , datasetType :: DatasetType
                          } deriving Show
 
-mkDataset :: (Enum a, Fractional a) => a -> a -> Colour -> [a] -> Dataset a
-mkDataset start end colour points = Dataset { datasetPoints = uniformPoints start end points
-                                            , datasetColour = colour
-                                            }
+mkDataset :: (Enum a, Fractional a) => a -> a -> DatasetType -> Colour -> [a] -> Dataset a
+mkDataset start end dataType colour points = Dataset { datasetPoints = uniformPoints start end points
+                                                     , datasetColour = colour
+                                                     , datasetType = dataType
+                                                     }
 
 data Chart a = Chart { chartData :: [Dataset a]
                      , chartWidth :: Int
@@ -54,4 +61,7 @@ data Chart a = Chart { chartData :: [Dataset a]
                      } deriving Show
 
 mkChart :: Int -> Int -> [Dataset a] -> Chart a
-mkChart width height datasets = Chart { chartData = datasets, chartWidth = width, chartHeight = height}
+mkChart width height datasets = Chart { chartData = datasets
+                                      , chartWidth = width
+                                      , chartHeight = height
+                                      }

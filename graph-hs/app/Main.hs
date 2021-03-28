@@ -1,16 +1,11 @@
 module Main where
 
 import Graph
-import Svg
-
-chartWidth :: Int
-chartWidth = 400
-
-chartHeight :: Int
-chartHeight = 200
-
-chartGutter :: Int
-chartGutter = 10
+import Svg (showSvgFile)
+import System.Environment
 
 main :: IO ()
-main = readChart chartWidth chartHeight >>= putStrLn . showSvgFile chartWidth chartHeight
+main = do
+  inputArgs <- getArgs
+  let args@(Arguments { argWidth = w, argHeight = h }) = parseArgs inputArgs
+  readChart args >>= putStrLn . showSvgFile w h

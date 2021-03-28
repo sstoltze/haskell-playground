@@ -25,8 +25,15 @@ class Svg a where
   showSvgFile :: Int -> Int -> a -> String
   showSvgFile w h a = toSvg w h a
 
+instance PrintfArg a => Svg (Dataset a) where
+  showSvg d | datasetType d == Line = svgLine d
+            | datasetType d == Circles = svgCircle d
+
+instance (PrintfArg a, Fractional a, Ord a) => Svg (Chart a) where
+  showSvg = svgChart . svgScaleChart
+
 svgPoint :: (PrintfArg a) => Point a -> String
-svgPoint (a,b) = printf "%.2f" a ++ "," ++ printf "%.2f" b
+svgPoint p = printf "%.2f" (pointX p) ++ "," ++ printf "%.2f" (pointY p)
 
 svgLine :: (PrintfArg a) => Dataset a -> String
 svgLine d = "<polyline stroke='" ++ colour ++ "' stroke-width='1.5' fill='none' points='" ++ svgPoints ++ "'/>"
@@ -34,14 +41,19 @@ svgLine d = "<polyline stroke='" ++ colour ++ "' stroke-width='1.5' fill='none' 
     colour = hexColour $ datasetColour d
     svgPoints = foldr (\p r -> svgPoint p ++ " " ++ r) "" $ datasetPoints d
 
-instance PrintfArg a => Svg (Dataset a) where
-  showSvg = svgLine
+svgCircle :: (PrintfArg a) => Dataset a -> String
+svgCircle d = foldr (++) "\n" svgCircles
+  where
+    colour = hexColour $ datasetColour d
+    pointToSvgCircle p =
+      printf "<circle cx='%.2f' cy='%.2f' r='1.2' fill='%s' stroke='%s' />" (pointX p) (pointY p) colour colour
+    svgCircles = fmap pointToSvgCircle $ datasetPoints d
 
 svgChart :: (PrintfArg a) => Chart a -> String
 svgChart c = svgLines
   where
     datasets = chartData c
-    svgLines = foldl (++) "\n" $ map showSvg datasets
+    svgLines = foldr (++) "\n" $ map showSvg datasets
 
 svgScaleDataset :: (Fractional a, Ord a) => a -> a -> Dataset a -> Dataset a
 svgScaleDataset width height d@(Dataset {datasetPoints = points}) =
@@ -55,11 +67,8 @@ svgScaleDataset width height d@(Dataset {datasetPoints = points}) =
     minX = minimum xs
     maxX = maximum xs
     deltaX = maxX - minX
-    scale (x,y) = (width * (x - minX) / deltaX, height - height * (y - minY) / deltaY)
+    scale p = (width * ((pointX p) - minX) / deltaX, height - height * ((pointY p) - minY) / deltaY)
 
 svgScaleChart :: (Fractional a, Ord a) => Chart a -> Chart a
 svgScaleChart c@(Chart { chartWidth = w, chartHeight = h, chartData = d }) =
   c { chartData = fmap (svgScaleDataset (fromIntegral w) (fromIntegral h)) d }
-
-instance (PrintfArg a, Fractional a, Ord a) => Svg (Chart a) where
-  showSvg = svgChart . svgScaleChart
