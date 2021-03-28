@@ -1,8 +1,9 @@
 module Main where
 
-import Graph
+import Utility
 import Svg (showSvgFile)
-import System.Environment
+
+import System.Environment (getArgs)
 
 main :: IO ()
 main = do

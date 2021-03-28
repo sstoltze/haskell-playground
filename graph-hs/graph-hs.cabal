@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4298c9b89f2652bd3fb239cd97f9b405aa652ac1a7f455bea74eccf9c4a17138
+-- hash: 7739bca7eaec0ed1ff3e48fd91373c8c1458377d9db1c3b579a7635764cd0888
 
 name:           graph-hs
 version:        0.1.0.0
@@ -26,7 +26,6 @@ source-repository head
 
 library
   exposed-modules:
-      Graph
       Svg
       Types
   other-modules:
@@ -40,6 +39,7 @@ library
 executable graph-hs-exe
   main-is: Main.hs
   other-modules:
+      Utility
       Paths_graph_hs
   hs-source-dirs:
       app
