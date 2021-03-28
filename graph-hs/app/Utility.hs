@@ -3,6 +3,8 @@ module Utility ( Arguments(..)
                , readChart
                ) where
 
+import Data.Char
+
 import Types (Chart, DatasetType(..), Dataset, Colour, mkChart, mkDataset, mkColour)
 import System.IO (IOMode(ReadMode), Handle, openFile, hIsEOF, hClose, hGetLine, stdin)
 
@@ -14,6 +16,7 @@ data Arguments = Arguments { argWidth :: Int
                            , argType :: DatasetType
                            , argHandle :: InputType
                            , argColours :: [Colour]
+                           , argNames :: [String]
                            }
 
 defaultArguments :: Arguments
@@ -22,6 +25,7 @@ defaultArguments = Arguments { argWidth = 400
                              , argType = Line
                              , argHandle = Handle stdin
                              , argColours = defaultColours
+                             , argNames = defaultNames
                              }
 
 parseArgs :: [String] -> Arguments
@@ -61,8 +65,15 @@ readPipe (Arguments { argHandle = handle }) = openArgHandle handle >>= readPipeA
         readPipeAcc (inputLine : acc) h
 
 toChart :: Arguments -> [String] -> Chart Double
-toChart args@(Arguments { argWidth = width, argHeight = height }) =
-  mkChart width height . toDatasets args . linesToPoints
+toChart args@(Arguments { argWidth = width, argHeight = height }) inputLines =
+  mkChart width height $ toDatasets updatedArgs $ linesToPoints input
+  where
+    (updatedArgs, input) = checkForTitles args inputLines
+    checkForTitles a [] = (a, [])
+    checkForTitles a (i:is) =
+      if any isLetter i
+      then (a { argNames = words i }, is)
+      else (a, i:is)
 
 readChart :: Arguments -> IO (Chart Double)
 readChart args =
@@ -78,9 +89,19 @@ defaultColours = [ mkColour 230 159 0
                  , mkColour 204 121 167
                  ]
 
+defaultNames :: [String]
+defaultNames = [ "Plot 1"
+               , "Plot 2"
+               , "Plot 3"
+               , "Plot 4"
+               , "Plot 5"
+               , "Plot 6"
+               , "Plot 7"
+               ]
+
 toDatasets :: Arguments -> [[Double]] -> [Dataset Double]
-toDatasets (Arguments { argWidth = end, argType = dataType, argColours = colours })
-  = zipWith (mkDataset 0 (fromIntegral end) dataType) colours
+toDatasets (Arguments { argWidth = end, argType = dataType, argColours = colours, argNames = names })
+  = zipWith3 (mkDataset 0 (fromIntegral end) dataType) colours names
 
 linesToPoints :: [String] -> [[Double]]
 linesToPoints [] = repeat []

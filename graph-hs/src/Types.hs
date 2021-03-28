@@ -1,5 +1,7 @@
 module Types where
 
+import Data.Char ( intToDigit )
+
 data Colour = Colour { colourRed :: Int
                      , colourGreen :: Int
                      , colourBlue :: Int
@@ -12,8 +14,7 @@ hexColour :: Colour -> String
 hexColour (Colour { colourRed = r, colourGreen = g, colourBlue = b}) =
   "#" ++ hex r ++ hex g ++ hex b
   where
-    hex n = digitToHex (n `div` 16) : digitToHex (n `mod` 16) : []
-    digitToHex n = "0123456789ABCDEF" !! n
+    hex n = intToDigit (n `div` 16) : intToDigit (n `mod` 16) : []
 
 type Point a = (a, a)
 
@@ -47,13 +48,19 @@ data DatasetType = Line
 data Dataset a = Dataset { datasetPoints :: [Point a]
                          , datasetColour :: Colour
                          , datasetType :: DatasetType
+                         , datasetName :: String
+                         , datasetMinimum :: a
+                         , datasetMaximum :: a
                          } deriving Show
 
-mkDataset :: (Enum a, Fractional a) => a -> a -> DatasetType -> Colour -> [a] -> Dataset a
-mkDataset start end dataType colour points = Dataset { datasetPoints = uniformPoints start end points
-                                                     , datasetColour = colour
-                                                     , datasetType = dataType
-                                                     }
+mkDataset :: (Ord a, Enum a, Fractional a) => a -> a -> DatasetType -> Colour -> String -> [a] -> Dataset a
+mkDataset start end dataType colour name points = Dataset { datasetPoints = uniformPoints start end points
+                                                          , datasetColour = colour
+                                                          , datasetType = dataType
+                                                          , datasetName = name
+                                                          , datasetMinimum = minimum points
+                                                          , datasetMaximum = maximum points
+                                                          }
 
 data Chart a = Chart { chartData :: [Dataset a]
                      , chartWidth :: Int

@@ -3,10 +3,16 @@ module Svg where
 import Types
 import Text.Printf
 
+labelWidth :: Int
+labelWidth = 300
+
+labelMargin :: Int
+labelMargin = 30
+
 svgHeader :: Int -> Int -> String
 svgHeader w h =
   "<?xml version='1.0'?>\n<svg xmlns='http://www.w3.org/2000/svg' width='"
-  ++ show w
+  ++ show (w + labelWidth)
   ++ "' height='"
   ++ show h
   ++ "' version='1.1'>\n"
@@ -35,8 +41,25 @@ instance (PrintfArg a, Fractional a, Ord a) => Svg (Chart a) where
 svgPoint :: (PrintfArg a) => Point a -> String
 svgPoint p = printf "%.2f" (pointX p) ++ "," ++ printf "%.2f" (pointY p)
 
+svgTitles :: (PrintfArg a) => Chart a -> String
+svgTitles c = svgTitles' "" 1 (chartData c)
+  where
+    svgTitles' acc _ [] = acc
+    svgTitles' acc i (d:ds) = svgTitles' (acc ++ svgTitle i d) (i+1) ds
+    svgTitle i d =
+      let colour = hexColour $ datasetColour d in
+      printf "<g transform='translate(%d %d)'>\n" (chartWidth c + labelMargin) (i * 20 :: Int)
+      ++ printf "<circle cx='-10' cy='-7' r='3.5' fill='%s' stroke='%s'/>\n" colour colour
+      ++ printf "<text style='fill: %s; font-size: 15px; font-family: mono'>%s [%.2f,%.2f]</text>" colour (datasetName d) (datasetMinimum d) (datasetMaximum d)
+      ++ "</g>"
+
 svgLine :: (PrintfArg a) => Dataset a -> String
-svgLine d = "<polyline stroke='" ++ colour ++ "' stroke-width='1.5' fill='none' points='" ++ svgPoints ++ "'/>"
+svgLine d =
+  "<polyline stroke='"
+  ++ colour
+  ++ "' stroke-width='1.5' fill='none' points='"
+  ++ svgPoints
+  ++ "'/>\n"
   where
     colour = hexColour $ datasetColour d
     svgPoints = foldr (\p r -> svgPoint p ++ " " ++ r) "" $ datasetPoints d
@@ -50,10 +73,13 @@ svgCircle d = foldr (++) "\n" svgCircles
     svgCircles = fmap pointToSvgCircle $ datasetPoints d
 
 svgChart :: (PrintfArg a) => Chart a -> String
-svgChart c = svgLines
+svgChart c =
+  svgDatasets
+  ++ "\n"
+  ++ svgTitles c
   where
     datasets = chartData c
-    svgLines = foldr (++) "\n" $ map showSvg datasets
+    svgDatasets = foldr (++) "\n" $ map showSvg datasets
 
 svgScaleDataset :: (Fractional a, Ord a) => a -> a -> Dataset a -> Dataset a
 svgScaleDataset width height d@(Dataset {datasetPoints = points}) =
