@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7739bca7eaec0ed1ff3e48fd91373c8c1458377d9db1c3b579a7635764cd0888
+-- hash: 93673d7a8ef2426f47b5beabb29b0a2782ef2fe62bc58523145d894c6dc6a572
 
 name:           graph-hs
 version:        0.1.0.0
@@ -36,7 +36,7 @@ library
       base >=4.7 && <5
   default-language: Haskell2010
 
-executable graph-hs-exe
+executable plot.hs
   main-is: Main.hs
   other-modules:
       Utility
