@@ -1,5 +1,6 @@
 module Svg where
 
+import Data.List
 import Types
 import Text.Printf
 
@@ -31,12 +32,14 @@ class Svg a where
   showSvgFile :: Int -> Int -> a -> String
   showSvgFile w h a = toSvg w h a
 
-instance PrintfArg a => Svg (Dataset a) where
-  showSvg d | datasetType d == Line = svgLine d
-            | datasetType d == Circles = svgCircle d
+groupSvg :: Svg a => [a] -> String
+groupSvg as =
+  "<g>\n" ++ foldr (++) "" svgElements ++ "</g>"
+  where
+    svgElements = intersperse "\n" $ map showSvg as
 
-instance (PrintfArg a, Fractional a, Ord a) => Svg (Chart a) where
-  showSvg = svgChart . svgScaleChart
+instance Svg a => Svg [a] where
+  showSvg = groupSvg
 
 svgPoint :: (PrintfArg a) => Point a -> String
 svgPoint p = printf "%.2f" (pointX p) ++ "," ++ printf "%.2f" (pointY p)
@@ -65,12 +68,16 @@ svgLine d =
     svgPoints = foldr (\p r -> svgPoint p ++ " " ++ r) "" $ datasetPoints d
 
 svgCircle :: (PrintfArg a) => Dataset a -> String
-svgCircle d = foldr (++) "\n" svgCircles
+svgCircle d = foldr (++) "" svgCircles
   where
     colour = hexColour $ datasetColour d
     pointToSvgCircle p =
-      printf "<circle cx='%.2f' cy='%.2f' r='1.2' fill='%s' stroke='%s' />" (pointX p) (pointY p) colour colour
+      printf "<circle cx='%.2f' cy='%.2f' r='1.2' fill='%s' stroke='%s' />\n" (pointX p) (pointY p) colour colour
     svgCircles = fmap pointToSvgCircle $ datasetPoints d
+
+instance PrintfArg a => Svg (Dataset a) where
+  showSvg d@(Dataset { datasetType = Line }) = svgLine d
+  showSvg d@(Dataset { datasetType = Circles }) = svgCircle d
 
 svgChart :: (PrintfArg a) => Chart a -> String
 svgChart c =
@@ -79,7 +86,7 @@ svgChart c =
   ++ svgTitles c
   where
     datasets = chartData c
-    svgDatasets = foldr (++) "\n" $ map showSvg datasets
+    svgDatasets = foldr (++) "" $ intersperse "\n" $ map showSvg datasets
 
 svgScaleDataset :: (Fractional a, Ord a) => a -> a -> Dataset a -> Dataset a
 svgScaleDataset width height d@(Dataset {datasetPoints = points}) =
@@ -98,3 +105,6 @@ svgScaleDataset width height d@(Dataset {datasetPoints = points}) =
 svgScaleChart :: (Fractional a, Ord a) => Chart a -> Chart a
 svgScaleChart c@(Chart { chartWidth = w, chartHeight = h, chartData = d }) =
   c { chartData = fmap (svgScaleDataset (fromIntegral w) (fromIntegral h)) d }
+
+instance (PrintfArg a, Fractional a, Ord a) => Svg (Chart a) where
+  showSvg = svgChart . svgScaleChart
