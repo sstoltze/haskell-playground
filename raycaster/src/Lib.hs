@@ -17,9 +17,11 @@ testPic = picture testScene
     blueSphere  = Sphere (Position 0 1 0) 1 blue
     greenSphere = Sphere (Position 0 0 1) 1 green
     testCamera = Camera (Position (10) 0 0) (Vector (-1) 0 0) (Vector 0 0 1) (Resolution 500 500)
+    testLight = Light (Position (-10) (-10) (-10))
     testScene = Scene { sceneObjects = [redSphere, blueSphere, greenSphere]
                       , sceneBackground = black
                       , sceneCamera = testCamera
+                      , sceneLight = testLight
                       }
 
 runTest :: IO ()
@@ -45,6 +47,7 @@ data Camera = Camera { cameraPosition :: Position
 data HitData = HitData { hitRay :: Ray
                        , hitIntersection :: Double
                        , hitColour :: Colour
+                       , hitNormal :: Vector
                        } deriving Show
 
 class SceneObject a where
@@ -66,19 +69,25 @@ instance SceneObject Sphere where
         b = 2 * dx * (rx - sx) + 2 * dy * (ry - sy) + 2 * dz * (rz - sz)
         c = sx*sx + sy*sy + sz*sz - r*r + rx*rx + ry*ry + rz*rz - 2 * (rx*sx + ry*sy + rz*sz)
         d = sqrt $ b * b - 4 * a * c
-        x1 = (-b + d)/(2 * a)
-        x2 = (-b - d)/(2 * a)
+        t1 = (-b + d)/(2 * a)
+        t2 = (-b - d)/(2 * a)
+        intersection = if t1 * t2 < 0 then max t1 t2 else min t1 t2
     in
-      if isNaN d
+      if isNaN d || (t1 < 0 && t2 < 0)
       then Nothing
       else Just $ HitData { hitRay = ray
-                          , hitIntersection = min x1 x2
+                          , hitIntersection = intersection
                           , hitColour = colour
+                          , hitNormal = positionSubtract (Position 0 0 0) (rayPoint intersection ray)
                           }
+
+data Light = Light { lightPosition :: Position
+                   }
 
 data Scene a = Scene { sceneObjects :: [a]
                      , sceneBackground :: Colour
                      , sceneCamera :: Camera
+                     , sceneLight :: Light
                      }
 
 makeRay :: Camera -> Int -> Int -> Ray
@@ -111,6 +120,13 @@ picture s = ImageRGB8 (generateImage snap width height)
     snap x y =
       case intersections (makeRay camera x y) of
         [] -> colourPixel $ sceneBackground s
-        h:_ -> colourPixel $ hitColour h
+        h:_ -> colourPixel $ calculateColour h
     intersections ray =
       sortBy (\h1 h2 -> compare (hitIntersection h1) (hitIntersection h2)) $ mapMaybe (intersectRay ray) $ sceneObjects s
+    calculateColour hit = colourScale c (hitColour hit)
+       where
+         light = lightPosition $ sceneLight s
+         c = cos (dotProduct normalizedSurface normalizedLight)
+         normalizedLight = vectorNormalize $ positionSubtract surfacePoint light
+         surfacePoint = rayPoint (hitIntersection hit) (hitRay hit)
+         normalizedSurface = vectorNormalize $ hitNormal hit

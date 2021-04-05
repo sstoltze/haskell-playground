@@ -16,4 +16,6 @@ createColour r g b = Colour (clamp r) (clamp g) (clamp b)
     clamp n = max (min n 255) 0
 
 colourScale :: RealFrac a => a -> Colour -> Colour
-colourScale s (Colour r g b) = createColour (round s*r) (round s*g) (round s*b)
+colourScale s (Colour r g b) = createColour (scale r) (scale g) (scale b)
+  where
+    scale n = round (s * fromIntegral n)
