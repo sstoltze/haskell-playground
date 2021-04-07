@@ -57,3 +57,6 @@ positionSubtract
     vx = p1x - p2x
     vy = p1y - p2y
     vz = p1z - p2z
+
+positionDistance :: Position -> Position -> Double
+positionDistance p1 p2 = vectorLength $ positionSubtract p1 p2

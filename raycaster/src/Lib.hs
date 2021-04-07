@@ -9,19 +9,23 @@ import Codec.Picture
 testPic :: DynamicImage
 testPic = picture testScene
   where
+    grey = createColour 75 75 75
     red = createColour 255 0 0
-    black = createColour 0 0 0
     blue = createColour 0 0 255
     green = createColour 0 255 0
     redSphere   = Sphere (Position 1 0 0) 1 red
-    blueSphere  = Sphere (Position 0 1 0) 1 blue
-    greenSphere = Sphere (Position 0 0 1) 1 green
-    testCamera = Camera (Position (10) 0 0) (Vector (-1) 0 0) (Vector 0 0 1) (Resolution 500 500)
-    testLight = Light (Position (-10) (-10) (-10))
+    blueSphere  = Sphere (Position 0 0 1) 1 blue
+    greenSphere = Sphere (Position 0 1 0) 1 green
+    testCamera = Camera (Position (-10) 0 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
+    testLightCamera = Light (Position (-10) (0) (0))
+    testLight = Light (Position (-5) (-5) (-5))
+    -- testLightBelow = Light (Position 0 0 (-10))
+    -- testLightAbove = Light (Position 0 0 10)
+    -- testLightLeft = Light (Position 0 10 0)
     testScene = Scene { sceneObjects = [redSphere, blueSphere, greenSphere]
-                      , sceneBackground = black
+                      , sceneBackground = grey
                       , sceneCamera = testCamera
-                      , sceneLight = testLight
+                      , sceneLights = [testLightCamera, testLight]
                       }
 
 runTest :: IO ()
@@ -33,6 +37,10 @@ data Ray = Ray { rayStart :: Position
 
 rayPoint :: Double -> Ray -> Position
 rayPoint t (Ray start direction) = positionAdd start (vectorScale t direction)
+
+rayIntersections :: SceneObject a => Ray -> [a] -> [HitData]
+rayIntersections ray objects =
+      sortBy (\h1 h2 -> compare (hitIntersection h1) (hitIntersection h2)) $ mapMaybe (intersectRay ray) objects
 
 data Resolution = Resolution { resolutionWidth :: Int
                              , resolutionHeight :: Int
@@ -50,6 +58,9 @@ data HitData = HitData { hitRay :: Ray
                        , hitNormal :: Vector
                        } deriving Show
 
+hitPoint :: HitData -> Position
+hitPoint h = rayPoint (hitIntersection h) (hitRay h)
+
 class SceneObject a where
   intersectRay :: Ray -> a -> Maybe HitData
 
@@ -62,7 +73,7 @@ instance SceneObject Sphere where
   intersectRay
     ray@(Ray { rayStart     = (Position rx ry rz)
              , rayDirection = (Vector   dx dy dz) })
-    (Sphere { sphereCentre = (Position sx sy sz)
+    (Sphere { sphereCentre = centre@(Position sx sy sz)
             , sphereRadius = r
             , sphereColour = colour }) =
     let a = dx*dx+dy*dy+dz*dz
@@ -78,7 +89,7 @@ instance SceneObject Sphere where
       else Just $ HitData { hitRay = ray
                           , hitIntersection = intersection
                           , hitColour = colour
-                          , hitNormal = positionSubtract (Position 0 0 0) (rayPoint intersection ray)
+                          , hitNormal = positionSubtract centre (rayPoint intersection ray)
                           }
 
 data Light = Light { lightPosition :: Position
@@ -87,7 +98,7 @@ data Light = Light { lightPosition :: Position
 data Scene a = Scene { sceneObjects :: [a]
                      , sceneBackground :: Colour
                      , sceneCamera :: Camera
-                     , sceneLight :: Light
+                     , sceneLights :: [Light]
                      }
 
 makeRay :: Camera -> Int -> Int -> Ray
@@ -102,31 +113,30 @@ makeRay (Camera { cameraPosition = p
   where
     height = resolutionHeight res
     width  = resolutionWidth res
-    yScale = (fromIntegral y - fromIntegral height / 2) / fromIntegral height
-    xScale = (fromIntegral x - fromIntegral width  / 2) / fromIntegral width
+    yScale = (fromIntegral height / 2 - fromIntegral y) / fromIntegral height
+    xScale = (fromIntegral width  / 2 - fromIntegral x) / fromIntegral width
     normalizedForward = vectorNormalize d
     normalizedUp = vectorNormalize u
     scaledUp = vectorScale yScale normalizedUp
-    scaledLeft = vectorScale xScale $ crossProduct normalizedForward normalizedUp
+    scaledLeft = vectorScale xScale $ crossProduct normalizedUp normalizedForward
     p1 = positionAdd (positionAdd (positionAdd p normalizedForward) scaledUp) scaledLeft
 
 picture :: (SceneObject a) => Scene a -> DynamicImage
 picture s = ImageRGB8 (generateImage snap width height)
   where
     camera = sceneCamera s
+    objects = sceneObjects s
     resolution = cameraResolution camera
     width = resolutionWidth resolution
     height = resolutionHeight resolution
     snap x y =
-      case intersections (makeRay camera x y) of
-        [] -> colourPixel $ sceneBackground s
+      case rayIntersections (makeRay camera x y) objects of
+        []  -> colourPixel $ sceneBackground s
         h:_ -> colourPixel $ calculateColour h
-    intersections ray =
-      sortBy (\h1 h2 -> compare (hitIntersection h1) (hitIntersection h2)) $ mapMaybe (intersectRay ray) $ sceneObjects s
-    calculateColour hit = colourScale c (hitColour hit)
+    calculateColour hit = colourScale maxCosine (hitColour hit)
        where
-         light = lightPosition $ sceneLight s
-         c = cos (dotProduct normalizedSurface normalizedLight)
-         normalizedLight = vectorNormalize $ positionSubtract surfacePoint light
-         surfacePoint = rayPoint (hitIntersection hit) (hitRay hit)
+         maxCosine = maximum $ map scaleFromLight $ sceneLights s
+         scaleFromLight light = dotProduct normalizedSurface $ normalizedLightVector light
+         normalizedLightVector light = vectorNormalize $ positionSubtract surfacePoint $ lightPosition light
+         surfacePoint = hitPoint hit
          normalizedSurface = vectorNormalize $ hitNormal hit
