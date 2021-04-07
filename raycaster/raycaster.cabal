@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d69c26530ae84557d608324db32a31a649fcce357f10e5f867ab022c40e1b667
+-- hash: f98de6d6cd2a9f0a6be2bcdfe787136583789309fbdef52c11864ef6123b4013
 
 name:           raycaster
 version:        0.1.0.0
@@ -29,7 +29,9 @@ library
   exposed-modules:
       Colour
       Lib
+      Raycaster
       Space
+      Sphere
   other-modules:
       Paths_raycaster
   hs-source-dirs:
@@ -45,20 +47,6 @@ executable raycaster-exe
       Paths_raycaster
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      JuicyPixels
-    , base >=4.7 && <5
-    , raycaster
-  default-language: Haskell2010
-
-test-suite raycaster-test
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      Paths_raycaster
-  hs-source-dirs:
-      test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       JuicyPixels
