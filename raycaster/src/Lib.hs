@@ -2,8 +2,8 @@ module Lib where
 
 import Space
 import Colour
-import Data.Maybe (mapMaybe)
-import Data.List (sortBy)
+import Raycaster
+import Sphere
 import Codec.Picture
 
 testPic :: DynamicImage
@@ -31,82 +31,12 @@ testPic = picture testScene
 runTest :: IO ()
 runTest = savePngImage "/tmp/out.png" testPic
 
-data Ray = Ray { rayStart :: Position
-               , rayDirection :: Vector
-               } deriving Show
-
-rayPoint :: Double -> Ray -> Position
-rayPoint t (Ray start direction) = positionAdd start (vectorScale t direction)
-
-rayIntersections :: SceneObject a => Ray -> [a] -> [HitData]
-rayIntersections ray objects =
-      sortBy (\h1 h2 -> compare (hitIntersection h1) (hitIntersection h2)) $ mapMaybe (intersectRay ray) objects
-
-data Resolution = Resolution { resolutionWidth :: Int
-                             , resolutionHeight :: Int
-                             }
-
-data Camera = Camera { cameraPosition :: Position
-                     , cameraDirection :: Vector
-                     , cameraUp :: Vector
-                     , cameraResolution :: Resolution
-                     }
-
-data HitData = HitData { hitRay :: Ray
-                       , hitIntersection :: Double
-                       , hitColour :: Colour
-                       , hitNormal :: Vector
-                       } deriving Show
-
-hitPoint :: HitData -> Position
-hitPoint h = rayPoint (hitIntersection h) (hitRay h)
-
-class SceneObject a where
-  intersectRay :: Ray -> a -> Maybe HitData
-
-data Sphere = Sphere { sphereCentre :: Position
-                     , sphereRadius :: Double
-                     , sphereColour :: Colour
-                     }
-
-instance SceneObject Sphere where
-  intersectRay
-    ray@(Ray { rayStart     = (Position rx ry rz)
-             , rayDirection = (Vector   dx dy dz) })
-    (Sphere { sphereCentre = centre@(Position sx sy sz)
-            , sphereRadius = r
-            , sphereColour = colour }) =
-    let a = dx*dx+dy*dy+dz*dz
-        b = 2 * dx * (rx - sx) + 2 * dy * (ry - sy) + 2 * dz * (rz - sz)
-        c = sx*sx + sy*sy + sz*sz - r*r + rx*rx + ry*ry + rz*rz - 2 * (rx*sx + ry*sy + rz*sz)
-        d = sqrt $ b * b - 4 * a * c
-        t1 = (-b + d)/(2 * a)
-        t2 = (-b - d)/(2 * a)
-        intersection = if t1 * t2 < 0 then max t1 t2 else min t1 t2
-    in
-      if isNaN d || (t1 < 0 && t2 < 0)
-      then Nothing
-      else Just $ HitData { hitRay = ray
-                          , hitIntersection = intersection
-                          , hitColour = colour
-                          , hitNormal = positionSubtract centre (rayPoint intersection ray)
-                          }
-
-data Light = Light { lightPosition :: Position
-                   }
-
-data Scene a = Scene { sceneObjects :: [a]
-                     , sceneBackground :: Colour
-                     , sceneCamera :: Camera
-                     , sceneLights :: [Light]
-                     }
-
-makeRay :: Camera -> Int -> Int -> Ray
-makeRay (Camera { cameraPosition = p
-                , cameraUp = u
-                , cameraDirection = d
-                , cameraResolution = res
-                }) x y =
+cameraRay :: Camera -> Int -> Int -> Ray
+cameraRay (Camera { cameraPosition = p
+                  , cameraUp = u
+                  , cameraDirection = d
+                  , cameraResolution = res
+                  }) x y =
   Ray { rayStart = p
       , rayDirection = vectorNormalize $ positionSubtract p1 p
       }
@@ -130,7 +60,7 @@ picture s = ImageRGB8 (generateImage snap width height)
     width = resolutionWidth resolution
     height = resolutionHeight resolution
     snap x y =
-      case rayIntersections (makeRay camera x y) objects of
+      case rayIntersections (cameraRay camera x y) objects of
         []  -> colourPixel $ sceneBackground s
         h:_ -> colourPixel $ calculateColour h
     calculateColour hit = colourScale maxCosine (hitColour hit)

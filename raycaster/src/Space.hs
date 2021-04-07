@@ -60,3 +60,10 @@ positionSubtract
 
 positionDistance :: Position -> Position -> Double
 positionDistance p1 p2 = vectorLength $ positionSubtract p1 p2
+
+data Ray = Ray { rayStart :: Position
+               , rayDirection :: Vector
+               } deriving Show
+
+rayPoint :: Double -> Ray -> Position
+rayPoint t (Ray start direction) = positionAdd start (vectorScale t direction)
