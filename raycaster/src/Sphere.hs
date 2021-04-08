@@ -4,7 +4,7 @@ import Colour
 import Space
 import Raycaster
 
-data Sphere = Sphere { sphereCentre :: Position
+data Sphere = Sphere { sphereCentre :: Position Double
                      , sphereRadius :: Double
                      , sphereColour :: Colour
                      }

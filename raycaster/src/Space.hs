@@ -1,16 +1,16 @@
 module Space where
 
-data Position = Position { posX :: Double
-                         , posY :: Double
-                         , posZ :: Double
-                         } deriving (Show, Eq)
+data Position a = Position { posX :: a
+                           , posY :: a
+                           , posZ :: a
+                           } deriving (Show, Eq)
 
-data Vector = Vector { vecX :: Double
-                     , vecY :: Double
-                     , vecZ :: Double
-                     } deriving (Show, Eq)
+data Vector a = Vector { vecX :: a
+                       , vecY :: a
+                       , vecZ :: a
+                       } deriving (Show, Eq)
 
-crossProduct :: Vector -> Vector -> Vector
+crossProduct :: (Num a) => Vector a -> Vector a -> Vector a
 crossProduct
   (Vector v1x v1y v1z)
   (Vector v2x v2y v2z) =
@@ -20,21 +20,21 @@ crossProduct
     v3y = v1z * v2x - v1x * v2z
     v3z = v1x * v2y - v1y * v2x
 
-dotProduct :: Vector -> Vector -> Double
+dotProduct :: (Num a) => Vector a -> Vector a -> a
 dotProduct
   (Vector v1x v1y v1z)
   (Vector v2x v2y v2z) =
    (v1x * v2x) + (v1y * v2y) + (v1z * v2z)
 
-vectorScale :: Double -> Vector -> Vector
+vectorScale :: (Num a) => a -> Vector a -> Vector a
 vectorScale a (Vector x y z) = Vector (a * x) (a * y) (a * z)
 
-vectorLength :: Vector -> Double
+vectorLength :: (Floating a) => Vector a -> a
 vectorLength (Vector x y z) = sqrt $ square x + square y + square z
   where
     square a = a ^ (2 :: Int)
 
-vectorNormalize :: Vector -> Vector
+vectorNormalize :: (Floating a, Eq a) => Vector a -> Vector a
 vectorNormalize v =
   if len == 0
   then v
@@ -42,13 +42,13 @@ vectorNormalize v =
   where
     len = vectorLength v
 
-positionAdd :: Position -> Vector -> Position
+positionAdd :: (Num a) => Position a -> Vector a -> Position a
 positionAdd
   (Position  x  y  z)
   (Vector   vx vy vz) =
   Position (x + vx) (y + vy) (z + vz)
 
-positionSubtract :: Position -> Position -> Vector
+positionSubtract :: (Num a) => Position a -> Position a -> Vector a
 positionSubtract
   (Position p1x p1y p1z)
   (Position p2x p2y p2z) =
@@ -58,12 +58,12 @@ positionSubtract
     vy = p1y - p2y
     vz = p1z - p2z
 
-positionDistance :: Position -> Position -> Double
+positionDistance :: (Floating a) => Position a -> Position a -> a
 positionDistance p1 p2 = vectorLength $ positionSubtract p1 p2
 
-data Ray = Ray { rayStart :: Position
-               , rayDirection :: Vector
-               } deriving Show
+data Ray a = Ray { rayStart :: Position a
+                 , rayDirection :: Vector a
+                 } deriving Show
 
-rayPoint :: Double -> Ray -> Position
+rayPoint :: (Num a) => a -> Ray a-> Position a
 rayPoint t (Ray start direction) = positionAdd start (vectorScale t direction)
