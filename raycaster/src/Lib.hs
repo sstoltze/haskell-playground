@@ -5,6 +5,7 @@ import Colour
 import Raycaster
 import Sphere
 import Codec.Picture
+import Variety
 
 testPic :: DynamicImage
 testPic = picture testScene
@@ -13,9 +14,9 @@ testPic = picture testScene
     red = createColour 255 0 0
     blue = createColour 0 0 255
     green = createColour 0 255 0
-    redSphere   = Sphere (Position 1 0 0) 1 red
-    blueSphere  = Sphere (Position 0 0 1) 1 blue
-    greenSphere = Sphere (Position 0 1 0) 1 green
+    redSphere   = sphereVariety (Position 1 0 0) 1 red
+    blueSphere  = sphereVariety (Position 0 0 1) 1 blue
+    greenSphere = sphereVariety (Position 0 1 0) 1 green
     testCamera = Camera (Position (-10) 0 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
     testLightCamera = Light (Position (-10) (0) (0))
     testLight = Light (Position (-5) (-5) (-5))

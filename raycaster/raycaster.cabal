@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f98de6d6cd2a9f0a6be2bcdfe787136583789309fbdef52c11864ef6123b4013
+-- hash: 43eb7dce24a47485fef5238d850788a9c708ffb9e4eef0ee712bf3f34838056e
 
 name:           raycaster
 version:        0.1.0.0
@@ -18,7 +18,7 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    README.md
+    README.org
     ChangeLog.md
 
 source-repository head
@@ -29,9 +29,11 @@ library
   exposed-modules:
       Colour
       Lib
+      Polynomial
       Raycaster
       Space
       Sphere
+      Variety
   other-modules:
       Paths_raycaster
   hs-source-dirs:
