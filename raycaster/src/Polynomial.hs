@@ -55,6 +55,9 @@ derive f (Var v) = f v
 derive f (Sum p q) = Sum (derive f p) (derive f q)
 derive f (Prod p q) = Sum (Prod (derive f p) q) (Prod p (derive f q))
 
+deriveCoefficients :: (Num a) => [a] -> [a]
+deriveCoefficients p = zipWith (*) (drop 1 p) (map fromInteger [1..])
+
 -- Various simplifications that can be done, mostly for debugging purposes
 expand :: (Num a, Eq a, Eq v) => Polynomial a v -> Polynomial a v
 expand (Sum (Const a) (Const b)) = Const (a + b)
@@ -95,6 +98,9 @@ evaluate f = \case
   Sum p q -> (evaluate f p) + (evaluate f q)
   Prod p q -> (evaluate f p) * (evaluate f q)
 
+evaluateCoefficients :: (Num a) => [a] -> a -> a
+evaluateCoefficients p x = sum $ zipWith (*) p $ iterate (*x) 1
+
 degree :: Polynomial a T -> Int
 degree (Const _) = 0
 degree (Var _) = 1
@@ -102,32 +108,34 @@ degree (Sum p q) = max (degree p) (degree q)
 degree (Prod p q) = (degree p) + (degree q)
 
 newton :: (Fractional a) => (a -> Bool) -> Int -> Polynomial a T -> [a]
-newton closeness iterations p = newton' $ polynomiumCoefficients p
+newton isRoot iterations p = newton' $ polynomiumCoefficients p
   where
     newton' [] = []
     newton' [_] = []
-    newton' coeffs = (maybeToList t) ++ newton closeness iterations (fromCoefficients $ removeRoot t coeffs)
+    newton' coeffs = (maybeToList t) ++ newton' (removeRoot t coeffs)
+      where
+        evalDerivedP = evaluateCoefficients $ deriveCoefficients coeffs
+        evalP = evaluateCoefficients coeffs
+        adjustStart i x0 =
+          if not (i == iterations) && isRoot (evalDerivedP x0)
+          then adjustStart (i+1) (x0 + fromRational 1/1000)
+          else x0
+        t = findRoot 0 (adjustStart 0 0)
+        findRoot i x0 =
+          if i == iterations || isRoot (evalDerivedP x0)
+          then Nothing
+          else if isRoot (evalP x0)
+               then Just x0
+               else findRoot (i+1) (x0 - (evalP x0)/(evalDerivedP x0))
     removeRoot Nothing _ = []
     removeRoot (Just x) coeffs = [ newCoeff i | i <- [0..len-2] ]
       where
         len = length coeffs
         newCoeff i = case i of
-          k | k < 0 -> 0
-          k | k == len-2 -> coeffs !! (len - 1)
-          _ -> (coeffs !! (i+1)) + newCoeff (i+1) * x
-    p' = derive (\_ -> Const 1) p
-    adjustedStart = findStart 0 0
-    findStart i x0 =
-      if not (i == iterations) && closeness (evaluate (\T -> x0) p')
-      then findStart (i+1) (x0 + fromRational 1/1000)
-      else x0
-    t = findRoot 0 adjustedStart
-    findRoot i x0 =
-      if i == iterations || closeness (evaluate (\T -> x0) p')
-      then Nothing
-      else if closeness $ evaluate (\T -> x0) p
-           then Just x0
-           else findRoot (i+1) (x0 - (evaluate (\T -> x0) p)/(evaluate (\T -> x0) p'))
+          k | k < 0        -> 0
+          k | k == len - 2 -> coeffs !! (len-1)
+          _                -> (coeffs !! (i+1)) + x * newCoeff (i+1)
+
 
 polynomiumCoefficients :: (Num a) => Polynomial a T -> [a]
 polynomiumCoefficients (Const a) = [a]
