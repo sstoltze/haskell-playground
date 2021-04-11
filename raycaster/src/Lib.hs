@@ -14,19 +14,30 @@ testPic = picture testScene
     red = createColour 255 0 0
     blue = createColour 0 0 255
     green = createColour 0 255 0
-    redSphere   = sphereVariety (Position 1 0 0) 1 red
-    blueSphere  = sphereVariety (Position 0 0 1) 1 blue
-    greenSphere = sphereVariety (Position 0 1 0) 1 green
+    redSphereVar   = Left $ sphereVariety (Position 1 1 0) 1 red
+    greenSphereVar = Left $ sphereVariety (Position 0 2 0) 1 green
+    blueSphereVar  = Left $ sphereVariety (Position 0 1 1) 1 blue
+    redSphere   = Right $ Sphere (Position 1 (-1) 0) 1 red
+    greenSphere = Right $ Sphere (Position 0 (-2) 0) 1 green
+    blueSphere  = Right $ Sphere (Position 0 (-1) 1) 1 blue
     testCamera = Camera (Position (-10) 0 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
     testLightCamera = Light (Position (-10) (0) (0))
-    testLight = Light (Position (-5) (-5) (-5))
+    testLight = Light (Position (0) (-10) (0))
     -- testLightBelow = Light (Position 0 0 (-10))
     -- testLightAbove = Light (Position 0 0 10)
     -- testLightLeft = Light (Position 0 10 0)
-    testScene = Scene { sceneObjects = [redSphere, blueSphere, greenSphere]
+    testScene = Scene { sceneObject = [ redSphere
+                                      , blueSphere
+                                      , greenSphere
+                                      , redSphereVar
+                                      , blueSphereVar
+                                      , greenSphereVar
+                                      ]
                       , sceneBackground = grey
                       , sceneCamera = testCamera
-                      , sceneLights = [testLightCamera, testLight]
+                      , sceneLights = [ testLightCamera
+                                      , testLight
+                                      ]
                       }
 
 runTest :: IO ()

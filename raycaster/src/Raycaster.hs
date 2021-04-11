@@ -3,7 +3,7 @@ module Raycaster where
 import Space
 import Colour
 
-import Data.Maybe (mapMaybe)
+import Data.Maybe (listToMaybe, mapMaybe)
 import Data.List (sortBy)
 import Codec.Picture
 
@@ -18,6 +18,15 @@ hitPoint h = rayPoint (hitIntersection h) (hitRay h)
 
 class SceneObject a where
   intersectRay :: Ray Double -> a -> Maybe HitData
+
+instance SceneObject a => SceneObject [a] where
+  intersectRay r objs = listToMaybe $ rayIntersections r objs
+
+instance (SceneObject a, SceneObject b) => SceneObject (Either a b) where
+  intersectRay r x = either (intersectRay r) (intersectRay r) x
+
+instance SceneObject a => SceneObject (Maybe a) where
+  intersectRay r x = x >>= intersectRay r
 
 rayIntersections :: SceneObject a => Ray Double -> [a] -> [HitData]
 rayIntersections ray objects =
@@ -36,7 +45,7 @@ data Camera = Camera { cameraPosition :: Position Double
 data Light = Light { lightPosition :: Position Double
                    }
 
-data Scene a = Scene { sceneObjects :: [a]
+data Scene a = Scene { sceneObject :: a
                      , sceneBackground :: Colour
                      , sceneCamera :: Camera
                      , sceneLights :: [Light]
@@ -66,14 +75,13 @@ picture :: (SceneObject a) => Scene a -> DynamicImage
 picture s = ImageRGB8 (generateImage snap width height)
   where
     camera = sceneCamera s
-    objects = sceneObjects s
     resolution = cameraResolution camera
     width = resolutionWidth resolution
     height = resolutionHeight resolution
     snap x y =
-      case rayIntersections (cameraRay camera x y) objects of
-        []  -> colourPixel $ sceneBackground s
-        h:_ -> colourPixel $ calculateColour h
+      case intersectRay (cameraRay camera x y) (sceneObject s) of
+        Nothing -> colourPixel $ sceneBackground s
+        Just h  -> colourPixel $ calculateColour h
     calculateColour hit = colourScale maxCosine (hitColour hit)
        where
          maxCosine = maximum $ map scaleFromLight $ sceneLights s

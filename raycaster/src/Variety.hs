@@ -28,7 +28,7 @@ instance SceneObject Variety where
         Y -> Sum (Const ry) (Prod (Const dy) (Var T))
         Z -> Sum (Const rz) (Prod (Const dz) (Var T))
       pT = changeVariables newVariables  p
-      solutions = filter (> 0) $ sort $ newton (\a -> abs a < 0.0001) 50 pT
+      solutions = filter (> 0) $ sort $ newton (\a -> abs a < 0.0001) 100 pT
       constructHit t = HitData { hitRay = ray
                                , hitIntersection = t
                                , hitColour = colour
@@ -51,7 +51,7 @@ sphereVariety centre radius colour = Variety { varietyPolynomial = spherePoly ce
 jacobian :: Variety -> Vector (Polynomial Double XYZ)
 jacobian (Variety p _) = Vector (deriveVar X p) (deriveVar Y p) (deriveVar Z p)
   where
-    deriveVar v = derive (\var -> if var == v then Const 1 else Var var)
+    deriveVar v = derive (\var -> if var == v then Const (-1) else Var var)
 
 evaluateVector :: (Num a) => Position a -> Vector (Polynomial a XYZ) -> Vector a
 evaluateVector (Position x y z) (Vector px py pz) =
