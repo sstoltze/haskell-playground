@@ -31,11 +31,12 @@ instance SceneObject Variety where
       solutions = filter (> 0) $ sort $ newton (\a -> abs a < 0.0001) 100 pT
       constructHit t = let normal = varietyNormal var $ rayPoint t ray
                            -- The "opposite" side of the variety is the inverse colour
-                           hColour = colour -- if dotProduct normal rd > 0 then colour else inverseColour colour
+                           hNormal = if dotProduct normal rd > 0 then normal else vectorScale (-1) normal
+                           hColour = if dotProduct normal rd > 0 then colour else inverseColour colour
                        in HitData { hitRay = ray
                                   , hitIntersection = t
                                   , hitColour = hColour
-                                  , hitNormal = normal
+                                  , hitNormal = hNormal
                                   }
 
 spherePoly :: Position Double -> Double -> Polynomial Double XYZ

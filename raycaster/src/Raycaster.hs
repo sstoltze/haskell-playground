@@ -87,7 +87,15 @@ picture s = ImageRGB8 (generateImage snap width height)
     calculateColour hit = colourScale maxCosine (hitColour hit)
        where
          maxCosine = maximum $ map scaleFromLight $ sceneLights s
-         scaleFromLight light = dotProduct normalizedSurface $ normalizedLightVector light
-         normalizedLightVector light = vectorNormalize $ positionSubtract surfacePoint $ lightPosition light
+         scaleFromLight light =
+           if isBlocked light
+           then 0
+           else dotProduct normalizedSurface $ normalizedLightVector light
+         lightVector light = positionSubtract surfacePoint $ lightPosition light
+         normalizedLightVector light = vectorNormalize $ lightVector light
          surfacePoint = hitPoint hit
          normalizedSurface = vectorNormalize $ hitNormal hit
+         lightRay light = Ray { rayStart = lightPosition light
+                              , rayDirection = lightVector light
+                              }
+         isBlocked light = maybe False (\h -> hitIntersection h < 0.9) (intersectRay (lightRay light) (sceneObject s))

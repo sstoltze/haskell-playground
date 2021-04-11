@@ -22,10 +22,12 @@ testPic = picture testScene
     greenSphere = Right $ Sphere (Position 0 (-2) 0) 1 green
     blueSphere  = Right $ Sphere (Position 0 (-1) 1) 1 blue
     cylinderVar = Left $ varietyTranslate (Vector (4) (-4) 0) $ cylinderVariety (Vector 0 0 1) 2 purple
+    surroundingCylinder = Left $ cylinderVariety (Vector 0 0 1) (10) (inverseColour grey)
     testCamera = Camera (Position (-10) (0) 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
-    testLightCamera = Light (Position (-10) 0 (0))
-    testLight = Light (Position (0) (10) (0))
-    -- testLightBelow = Light (Position 0 0 (-10))
+    -- testLightCamera = Light (cameraPosition testCamera)
+    testLight = Light (Position (-9) (-1) (1))
+    -- testLight2 = Light (Position (-2) (-1) 1)
+    --  testLightBelow = Light (Position 0 0 (-10))
     -- testLightAbove = Light (Position 0 0 10)
     -- testLightLeft = Light (Position 0 10 0)
     testScene = Scene { sceneObject = [ redSphere
@@ -35,11 +37,13 @@ testPic = picture testScene
                                       , blueSphereVar
                                       , greenSphereVar
                                       , cylinderVar
+                                      , surroundingCylinder
                                       ]
                       , sceneBackground = grey
                       , sceneCamera = testCamera
-                      , sceneLights = [ testLightCamera
-                                      , testLight
+                      , sceneLights = [ -- testLightCamera
+                                      testLight
+                                      -- , testLight2
                                       ]
                       }
 
