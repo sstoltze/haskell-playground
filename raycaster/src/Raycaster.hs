@@ -29,6 +29,23 @@ instance (SceneObject a, SceneObject b) => SceneObject (Either a b) where
 instance SceneObject a => SceneObject (Maybe a) where
   intersectRay r x = x >>= intersectRay r
 
+data BoundedObject a = BoundedObject { boundedObject :: a
+                                     , xBound :: Maybe (Double, Double)
+                                     , yBound :: Maybe (Double, Double)
+                                     , zBound :: Maybe (Double, Double)
+                                     }
+
+instance SceneObject a => SceneObject (BoundedObject a) where
+  intersectRay r a = if withinBounds hit then hit else Nothing
+    where
+      hit = intersectRay r (boundedObject a)
+      withinBounds Nothing = False
+      withinBounds (Just h) = let (Position x y z) = hitPoint h
+        in maybe True (inInterval x) (xBound a)
+        && maybe True (inInterval y) (yBound a)
+        && maybe True (inInterval z) (zBound a)
+      inInterval p (start, end) = start <= p && p <= end
+
 rayIntersections :: SceneObject a => Ray Double -> [a] -> [HitData]
 rayIntersections ray objects = hitSort $ mapMaybe (intersectRay ray) objects
   where

@@ -18,9 +18,17 @@ testPic = picture testScene
     redSphereVar   = Left $ sphereVariety (Position 1 1 0) 1 red
     greenSphereVar = Left $ sphereVariety (Position 0 2 0) 1 green
     blueSphereVar  = Left $ sphereVariety (Position 0 1 1) 1 blue
-    redSphere   = Right $ Sphere (Position 1 (-1) 0) 1 red
-    greenSphere = Right $ Sphere (Position 0 (-2) 0) 1 green
-    blueSphere  = Right $ Sphere (Position 0 (-1) 1) 1 blue
+    redSphere   = Right $ Right $ Sphere (Position 1 (-1) 0) 1 red
+    greenSphere = Right $ Left $ BoundedObject { boundedObject = Sphere (Position 0 (-2) 0) 1 green
+                                               , xBound = Just (-0.85, 0)
+                                               , yBound = Just (-3, -1.3)
+                                               , zBound = Nothing
+                                               }
+    blueSphere  = Right $ Left $ BoundedObject { boundedObject = Sphere (Position 0 (-1) 1) 1 blue
+                                               , xBound = Nothing
+                                               , yBound = Nothing
+                                               , zBound = Just (1, 2)
+                                               }
     cylinderVar = Left $ varietyTranslate (Vector (4) (-4) 0) $ cylinderVariety (Vector 0 0 1) 2 purple
     surroundingCylinder = Left $ cylinderVariety (Vector 0 0 1) (10) (inverseColour grey)
     testCamera = Camera (Position (-10) (0) 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
