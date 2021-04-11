@@ -14,15 +14,17 @@ testPic = picture testScene
     red = createColour 255 0 0
     blue = createColour 0 0 255
     green = createColour 0 255 0
+    purple = createColour 128 0 128
     redSphereVar   = Left $ sphereVariety (Position 1 1 0) 1 red
     greenSphereVar = Left $ sphereVariety (Position 0 2 0) 1 green
     blueSphereVar  = Left $ sphereVariety (Position 0 1 1) 1 blue
     redSphere   = Right $ Sphere (Position 1 (-1) 0) 1 red
     greenSphere = Right $ Sphere (Position 0 (-2) 0) 1 green
     blueSphere  = Right $ Sphere (Position 0 (-1) 1) 1 blue
-    testCamera = Camera (Position (-10) 0 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
-    testLightCamera = Light (Position (-10) (0) (0))
-    testLight = Light (Position (0) (-10) (0))
+    cylinderVar = Left $ varietyTranslate (Vector (4) (-4) 0) $ cylinderVariety (Vector 0 0 1) 2 purple
+    testCamera = Camera (Position (-10) (0) 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
+    testLightCamera = Light (Position (-10) 0 (0))
+    testLight = Light (Position (0) (10) (0))
     -- testLightBelow = Light (Position 0 0 (-10))
     -- testLightAbove = Light (Position 0 0 10)
     -- testLightLeft = Light (Position 0 10 0)
@@ -32,6 +34,7 @@ testPic = picture testScene
                                       , redSphereVar
                                       , blueSphereVar
                                       , greenSphereVar
+                                      , cylinderVar
                                       ]
                       , sceneBackground = grey
                       , sceneCamera = testCamera

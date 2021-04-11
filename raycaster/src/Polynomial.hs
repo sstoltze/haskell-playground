@@ -122,7 +122,7 @@ newton isRoot iterations p = newton' $ polynomiumCoefficients p
           else x0
         t = findRoot 0 (adjustStart 0 0)
         findRoot i x0 =
-          if i == iterations || isRoot (evalDerivedP x0)
+          if i == iterations
           then Nothing
           else if isRoot (evalP x0)
                then Just x0
@@ -135,7 +135,6 @@ newton isRoot iterations p = newton' $ polynomiumCoefficients p
           k | k < 0        -> 0
           k | k == len - 2 -> coeffs !! (len-1)
           _                -> (coeffs !! (i+1)) + x * newCoeff (i+1)
-
 
 polynomiumCoefficients :: (Num a) => Polynomial a T -> [a]
 polynomiumCoefficients (Const a) = [a]

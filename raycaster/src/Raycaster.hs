@@ -5,6 +5,7 @@ import Colour
 
 import Data.Maybe (listToMaybe, mapMaybe)
 import Data.List (sortBy)
+
 import Codec.Picture
 
 data HitData = HitData { hitRay :: Ray Double
@@ -29,8 +30,9 @@ instance SceneObject a => SceneObject (Maybe a) where
   intersectRay r x = x >>= intersectRay r
 
 rayIntersections :: SceneObject a => Ray Double -> [a] -> [HitData]
-rayIntersections ray objects =
-      sortBy (\h1 h2 -> compare (hitIntersection h1) (hitIntersection h2)) $ mapMaybe (intersectRay ray) objects
+rayIntersections ray objects = hitSort $ mapMaybe (intersectRay ray) objects
+  where
+    hitSort = sortBy (\h1 h2 -> compare (hitIntersection h1) (hitIntersection h2))
 
 data Resolution = Resolution { resolutionWidth :: Int
                              , resolutionHeight :: Int

@@ -19,3 +19,6 @@ colourScale :: RealFrac a => a -> Colour -> Colour
 colourScale s (Colour r g b) = createColour (scale r) (scale g) (scale b)
   where
     scale n = round (s * fromIntegral n)
+
+inverseColour :: Colour -> Colour
+inverseColour (Colour r g b) = createColour (255 - r) (255 - g) (255 - b)
