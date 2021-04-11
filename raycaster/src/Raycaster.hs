@@ -84,9 +84,11 @@ picture s = ImageRGB8 (generateImage snap width height)
       case intersectRay (cameraRay camera x y) (sceneObject s) of
         Nothing -> colourPixel $ sceneBackground s
         Just h  -> colourPixel $ calculateColour h
-    calculateColour hit = colourScale maxCosine (hitColour hit)
+    calculateColour hit = colourScale avgCosine (hitColour hit)
        where
-         maxCosine = maximum $ map scaleFromLight $ sceneLights s
+         average [] = 0
+         average xs = (sum xs) / (fromIntegral $ length xs)
+         avgCosine = average $ map scaleFromLight $ sceneLights s
          scaleFromLight light =
            if isBlocked light
            then 0

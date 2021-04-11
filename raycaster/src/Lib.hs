@@ -24,7 +24,7 @@ testPic = picture testScene
     cylinderVar = Left $ varietyTranslate (Vector (4) (-4) 0) $ cylinderVariety (Vector 0 0 1) 2 purple
     surroundingCylinder = Left $ cylinderVariety (Vector 0 0 1) (10) (inverseColour grey)
     testCamera = Camera (Position (-10) (0) 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
-    -- testLightCamera = Light (cameraPosition testCamera)
+    testLightCamera = Light (cameraPosition testCamera)
     testLight = Light (Position (-9) (-1) (1))
     -- testLight2 = Light (Position (-2) (-1) 1)
     --  testLightBelow = Light (Position 0 0 (-10))
@@ -41,8 +41,8 @@ testPic = picture testScene
                                       ]
                       , sceneBackground = grey
                       , sceneCamera = testCamera
-                      , sceneLights = [ -- testLightCamera
-                                      testLight
+                      , sceneLights = [ testLightCamera
+                                      , testLight
                                       -- , testLight2
                                       ]
                       }
