@@ -54,7 +54,7 @@ sphereVariety centre radius colour = Variety { varietyPolynomial = spherePoly ce
 jacobian :: Variety -> Vector (Polynomial Double XYZ)
 jacobian (Variety p _) = Vector (deriveVar X p) (deriveVar Y p) (deriveVar Z p)
   where
-    deriveVar v = derive (\var -> if var == v then Const 1 else Var var)
+    deriveVar v = derive (\var -> if var == v then Const 1 else Const 0)
 
 evaluateVector :: (Num a) => Position a -> Vector (Polynomial a XYZ) -> Vector a
 evaluateVector (Position x y z) (Vector px py pz) =
