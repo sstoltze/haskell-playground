@@ -9,7 +9,6 @@ import Raycaster
 import Data.List (sort)
 import Data.Maybe (listToMaybe)
 
--- Make a variety and instance Sceneobject
 data Variety = Variety { varietyPolynomial :: Polynomial Double XYZ
                        , varietyColour :: Colour
                        } deriving Show

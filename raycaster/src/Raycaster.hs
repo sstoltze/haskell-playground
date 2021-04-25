@@ -35,6 +35,15 @@ data BoundedObject a = BoundedObject { boundedObject :: a
                                      , zBound :: Maybe (Double, Double)
                                      }
 
+type Material = (HitData -> Colour)
+
+data TransmutedObject a = TransmutedObject { transmutedObject :: a
+                                           , transmutedMaterial :: Material
+                                           }
+
+instance SceneObject a => SceneObject (TransmutedObject a) where
+  intersectRay r x = intersectRay r (transmutedObject x) >>= \h -> return $ h {hitColour = (transmutedMaterial x) h}
+
 instance SceneObject a => SceneObject (BoundedObject a) where
   intersectRay r a = if withinBounds hit then hit else Nothing
     where

@@ -1,6 +1,6 @@
 module Svg where
 
-import Data.List
+import Data.List (intersperse)
 import Types
 import Text.Printf
 
