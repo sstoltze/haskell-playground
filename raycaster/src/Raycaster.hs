@@ -35,15 +35,6 @@ data BoundedObject a = BoundedObject { boundedObject :: a
                                      , zBound :: Maybe (Double, Double)
                                      }
 
-type Material = (HitData -> Colour)
-
-data TransmutedObject a = TransmutedObject { transmutedObject :: a
-                                           , transmutedMaterial :: Material
-                                           }
-
-instance SceneObject a => SceneObject (TransmutedObject a) where
-  intersectRay r x = intersectRay r (transmutedObject x) >>= \h -> return $ h {hitColour = (transmutedMaterial x) h}
-
 instance SceneObject a => SceneObject (BoundedObject a) where
   intersectRay r a = if withinBounds hit then hit else Nothing
     where
@@ -54,6 +45,15 @@ instance SceneObject a => SceneObject (BoundedObject a) where
         && maybe True (inInterval y) (yBound a)
         && maybe True (inInterval z) (zBound a)
       inInterval p (start, end) = start <= p && p <= end
+
+type Material = (HitData -> Colour)
+
+data TransmutedObject a = TransmutedObject { transmutedObject :: a
+                                           , transmutedMaterial :: Material
+                                           }
+
+instance SceneObject a => SceneObject (TransmutedObject a) where
+  intersectRay r x = intersectRay r (transmutedObject x) >>= \h -> return $ h {hitColour = (transmutedMaterial x) h}
 
 rayIntersections :: SceneObject a => Ray Double -> [a] -> [HitData]
 rayIntersections ray objects = hitSort $ mapMaybe (intersectRay ray) objects

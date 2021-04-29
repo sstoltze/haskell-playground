@@ -15,17 +15,17 @@ data Variety = Variety { varietyPolynomial :: Polynomial Double XYZ
 
 instance SceneObject Variety where
   intersectRay
-    ray@(Ray { rayStart     = (Position rx ry rz)
-             , rayDirection = rd@(Vector   dx dy dz) })
+    ray@(Ray { rayStart     = (Position  rx ry rz)
+             , rayDirection = rd@(Vector dx dy dz) })
     var@(Variety { varietyPolynomial = p
                  , varietyColour = colour
                  }) =
     listToMaybe solutions >>= return . constructHit
     where
       newVariables = \case
-        X -> Sum (Const rx) (Prod (Const dx) (Var T))
-        Y -> Sum (Const ry) (Prod (Const dy) (Var T))
-        Z -> Sum (Const rz) (Prod (Const dz) (Var T))
+        X -> (Const rx) + (Const dx) * (Var T)
+        Y -> (Const ry) + (Const dy) * (Var T)
+        Z -> (Const rz) + (Const dz) * (Var T)
       pT = changeVariables newVariables  p
       solutions = filter (> 0) $ sort $ newton (\a -> abs a < 0.0001) 100 pT
       constructHit t = let normal = varietyNormal var $ rayPoint t ray
