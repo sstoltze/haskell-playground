@@ -3,7 +3,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralisedNewtypeDeriving #-}
 {-# LANGUAGE TypeFamilies #-}
-module EnforcingLegalStateTransitions where
+module StateMachineWithTypedTransitions where
 
 import           Control.Monad.IO.Class
 import           Data.List.NonEmpty

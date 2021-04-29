@@ -1,6 +1,6 @@
 -- https://wickstrom.tech/finite-state-machines/2017/11/10/finite-state-machines-part-1-modeling-with-haskell.html
 {-# LANGUAGE OverloadedStrings #-}
-module StateMachinesWithAdts where
+module StateMachineWithAdts where
 
 import Control.Monad (foldM)
 import Data.List.NonEmpty
