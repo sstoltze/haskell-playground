@@ -11,10 +11,12 @@ simpleTest :: IO ()
 simpleTest = savePngImage "/tmp/out-simple.png" img
   where
     img = picture simpleScene
-    simpleScene = Scene { sceneObject = [ sphere
+    simpleScene = Scene { sceneObject = [ gradientSphere
+                                        , lightnessSphere
+                                        , saturationSphere
                                         , cylinder
-                                        ]
-                        , sceneBackground = black
+                                        ] :: [Either (TransmutedObject Sphere) (TransmutedObject Variety)]
+                        , sceneBackground = white
                         , sceneCamera = camera
                         , sceneLights = [ light1
                                         , light2
@@ -24,11 +26,16 @@ simpleTest = savePngImage "/tmp/out-simple.png" img
     black = createColour 0 0 0
     green = createColour 0 255 0
     red = createColour 255 0 0
+    white = createColour 255 255 255
+    blue = createColour 0 0 255
+    sphereColour = createColour 255 0 0
     camera = Camera (Position (-10) (0) 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
     cameraLight = Light $ cameraPosition camera
     light1 = Light (Position (-7) (7) 0)
     light2 = Light (Position (-7) (-7) 0)
-    sphere = Left $ objectGradient $ Sphere (Position 0 0 0) 1 red
+    gradientSphere = Left $ objectGradient $ Sphere (Position 0 0 0) 1 sphereColour
+    lightnessSphere = Left $ objectLightness $ Sphere (Position 0 2 0) 1 sphereColour
+    saturationSphere = Left $ objectSaturation $ Sphere (Position 0 (-2) 0) 1 sphereColour
     cylinder = Right $ objectGradient $ cylinderVariety (Vector 0 0 1) 10 green
 
 objectGradient :: SceneObject a => a -> TransmutedObject a
@@ -36,22 +43,28 @@ objectGradient a = TransmutedObject { transmutedObject = a
                                     , transmutedMaterial = material
                                     }
   where
-    material h = colourFromPoint (hitColour h) (scalePoint $ (hitPoint h) { posZ = 0 })
-    colourFromPoint c v = rotateColour (vectorToAngle v) c
-    scalePoint p = vectorNormalize $ positionSubtract p (Position 0 0 0)
+    material h = colourFromPoint (hitColour h) (hitNormal h)
+    colourFromPoint c v = rotateColour (vectorToAngle $ vectorNormalize $ v { vecZ = 0 }) c
     vectorToAngle (Vector x y _) =
       let radians = if y < 0 then pi - acos x else acos x in
         360 * radians / pi
 
-data FlatObject = FlatObject { flatColour :: Colour
-                             , flatDistance :: Double
-                             }
-instance SceneObject FlatObject where
-  intersectRay r (FlatObject c d) = Just $ HitData { hitRay = r
-                                                   , hitIntersection = d
-                                                   , hitColour = c
-                                                   , hitNormal = vectorScale (-1) $ rayDirection r
-                                                   }
+objectLightness :: SceneObject a => a -> TransmutedObject a
+objectLightness a = TransmutedObject { transmutedObject = a
+                                     , transmutedMaterial = material
+                                     }
+  where
+    material h = colourFromPoint (hitColour h) (vectorNormalize $ vectorScale (-1) $ hitNormal h)
+    colourFromPoint c (Vector _ _ z) = (colourToHsl c) { colourLightness = (z + 1) / 2 }
+
+objectSaturation :: SceneObject a => a -> TransmutedObject a
+objectSaturation a = TransmutedObject { transmutedObject = a
+                                      , transmutedMaterial = material
+                                      }
+  where
+    material h = colourFromPoint (hitColour h) (vectorNormalize $ vectorScale (-1) $ hitNormal h)
+    colourFromPoint c (Vector _ _ z) = (colourToHsl c) { colourSaturation = (z + 1) / 2 }
+
 
 testPic :: DynamicImage
 testPic = picture testScene

@@ -5,5 +5,5 @@ import Lib
 main :: IO ()
 main = do
   simpleTest
-  --runTest
-  putStrLn "Generated image in '/tmp/out-simple.png'"
+  runTest
+  putStrLn "Generated images in '/tmp/out.png' and '/tmp/out-simple.png'"
