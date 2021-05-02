@@ -42,6 +42,17 @@ vectorNormalize v =
   where
     len = vectorLength v
 
+vectorParallel :: (Eq a, Floating a) => Vector a -> Vector a -> Bool
+vectorParallel v w = (vectorLength $ crossProduct v w) == 0
+
+vectorOrthogonal :: (Eq a, Num a) => Vector a -> Vector a -> Bool
+vectorOrthogonal v w = dotProduct v w == 0
+
+vectorAngle :: (Floating a, Eq a) => Vector a -> Vector a -> a
+vectorAngle v w = acos c
+  where
+    c = dotProduct (vectorNormalize v) (vectorNormalize w)
+
 positionAdd :: (Num a) => Position a -> Vector a -> Position a
 positionAdd
   (Position  x  y  z)
