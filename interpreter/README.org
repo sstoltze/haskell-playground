@@ -1,5 +1,5 @@
-#+AUTHOR: Simon Stoltze
-#+EMAIL: Simon.Stoltze@ufst.dk
+#+AUTHOR: S. Stoltze
+#+EMAIL: sstoltze@gmail.com
 #+DATE: 2020-08-07
 #+OPTIONS: toc:nil title:nil author:nil email:nil date:nil creator:nil
 

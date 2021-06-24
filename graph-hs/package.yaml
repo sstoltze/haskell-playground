@@ -2,9 +2,9 @@ name:                graph-hs
 version:             0.1.0.0
 github:              "sstoltze/graph-hs"
 license:             BSD3
-author:              "Simon Stoltze"
+author:              "S. Stoltze"
 maintainer:          "sstoltze@gmail.com"
-copyright:           "2021 Simon Stoltze"
+copyright:           "2021 S. Stoltze"
 
 extra-source-files:
 - ChangeLog.md

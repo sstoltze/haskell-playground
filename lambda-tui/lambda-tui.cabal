@@ -5,9 +5,9 @@ version:             0.1.0.0
 homepage:            https://github.com/sstoltze/lambda-tui#readme
 license:             BSD3
 license-file:        LICENSE
-author:              Simon Stoltze
+author:              S. Stoltze
 maintainer:          sstoltze@gmail.com
-copyright:           2020 Simon Stoltze
+copyright:           2020 S. Stoltze
 category:            Web
 build-type:          Simple
 cabal-version:       >=1.10
