@@ -1,0 +1,14 @@
+
+./test/Spec.hs,15
+main main0,1
+
+./app/Main.hs,39
+module Main Main4,5
+main main10,11
+
+./src/Lib.hs,42
+module LibLib0,1
+someFunc someFunc4,5
+
+./Setup.hs,15
+main main1,2
