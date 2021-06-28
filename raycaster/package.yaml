@@ -2,9 +2,9 @@ name:                raycaster
 version:             0.1.0.0
 github:              "sstoltze/raycaster"
 license:             BSD3
-author:              "S. Stoltze"
+author:              "Sarah Stoltze"
 maintainer:          "sstoltze@gmail.com"
-copyright:           "2021 S. Stoltze"
+copyright:           "2021 Sarah Stoltze"
 
 extra-source-files:
 - README.org

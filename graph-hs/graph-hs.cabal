@@ -11,9 +11,9 @@ version:        0.1.0.0
 description:    Please see the README on GitHub at <https://github.com/sstoltze/graph-hs#readme>
 homepage:       https://github.com/sstoltze/graph-hs#readme
 bug-reports:    https://github.com/sstoltze/graph-hs/issues
-author:         S. Stoltze
+author:         Sarah Stoltze
 maintainer:     sstoltze@gmail.com
-copyright:      2021 S. Stoltze
+copyright:      2021 Sarah Stoltze
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple

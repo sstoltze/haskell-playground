@@ -2,9 +2,9 @@ name:                interpreter
 version:             0.1.0.0
 github:              "sstoltze/interpreter"
 license:             BSD3
-author:              "S. Stoltze"
+author:              "Sarah Stoltze"
 maintainer:          "sstoltze@gmail.com"
-copyright:           "2020 S. Stoltze"
+copyright:           "2020 Sarah Stoltze"
 
 extra-source-files:
 - README.org
