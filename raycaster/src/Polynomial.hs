@@ -37,10 +37,10 @@ typeOfTerm (Sum _ _) = "Sum"
 typeOfTerm (Prod _ _) = "Prod"
 
 sameType :: Polynomial a v -> Polynomial b w -> Bool
-sameType p q = (typeOfTerm p) == (typeOfTerm q)
+sameType p q = typeOfTerm p == typeOfTerm q
 
 testPoly :: Polynomial Double T
-testPoly = (Var T) * ((Const 2) + (Var T) + (Const 10))
+testPoly = Var T * (Const 2 + Var T + Const 10)
 
 changeVariables :: (v -> Polynomial a w) -> Polynomial a v -> Polynomial a w
 changeVariables newVar = \case
@@ -67,9 +67,9 @@ expand (Sum p (Sum q r)) = expand $ Sum (expand $ Sum p q) r
 expand (Sum (Sum p (Const a)) (Const b)) = expand $ Sum p (Const (a + b))
 expand (Sum (Sum p (Const a)) q) = expand $ Sum (expand $ Sum p q) (Const a)
 expand (Sum p (Prod (-1) q)) =
-  if (expand p) == (expand q)
+  if expand p == expand q
   then Const 0
-  else expand $ Sum (expand p) (expand $ (Prod (-1) q))
+  else expand $ Sum (expand p) (expand $ Prod (-1) q)
 expand (Sum p q) =
   let expandedP = expand p
       expandedQ = expand q
@@ -95,8 +95,8 @@ evaluate :: (Num a) => (v -> a) -> Polynomial a v -> a
 evaluate f = \case
   Const a -> a
   Var v -> f v
-  Sum p q -> (evaluate f p) + (evaluate f q)
-  Prod p q -> (evaluate f p) * (evaluate f q)
+  Sum p q -> evaluate f p + evaluate f q
+  Prod p q -> evaluate f p * evaluate f q
 
 evaluateCoefficients :: (Num a) => [a] -> a -> a
 evaluateCoefficients p x = sum $ zipWith (*) p $ iterate (*x) 1
@@ -105,28 +105,26 @@ degree :: Polynomial a T -> Int
 degree (Const _) = 0
 degree (Var _) = 1
 degree (Sum p q) = max (degree p) (degree q)
-degree (Prod p q) = (degree p) + (degree q)
+degree (Prod p q) = degree p + degree q
 
 newton :: (Fractional a) => (a -> Bool) -> Int -> Polynomial a T -> [a]
 newton isRoot iterations p = newton' $ polynomiumCoefficients p
   where
     newton' [] = []
     newton' [_] = []
-    newton' coeffs = (maybeToList t) ++ newton' (removeRoot t coeffs)
+    newton' coeffs = maybeToList t ++ newton' (removeRoot t coeffs)
       where
         evalDerivedP = evaluateCoefficients $ deriveCoefficients coeffs
         evalP = evaluateCoefficients coeffs
         adjustStart i x0 =
-          if not (i == iterations) && isRoot (evalDerivedP x0)
+          if i /= iterations && isRoot (evalDerivedP x0)
           then adjustStart (i+1) (x0 + fromRational 1/1000)
           else x0
         t = findRoot 0 (adjustStart 0 0)
-        findRoot i x0 =
-          if i == iterations
-          then Nothing
-          else if isRoot (evalP x0)
-               then Just x0
-               else findRoot (i+1) (x0 - (evalP x0)/(evalDerivedP x0))
+        findRoot i x0
+          | i == iterations = Nothing
+          | isRoot (evalP x0) = Just x0
+          | otherwise = findRoot (i+1) (x0 - evalP x0 / evalDerivedP x0)
     removeRoot Nothing _ = []
     removeRoot (Just x) coeffs = [ newCoeff i | i <- [0..len-2] ]
       where
@@ -145,7 +143,7 @@ polynomiumCoefficients (Sum p q) = coefficientSum pCoeffs qCoeffs
     qCoeffs = polynomiumCoefficients q
     coefficientSum [] b = b
     coefficientSum a [] = a
-    coefficientSum (a:as) (b:bs) = (a+b) : (coefficientSum as bs)
+    coefficientSum (a:as) (b:bs) = a+b : coefficientSum as bs
 polynomiumCoefficients (Prod p q) = [prodCoefficient i | i <- [0..(pDeg + qDeg)]]
   where
     pCoeffs = polynomiumCoefficients p
@@ -154,10 +152,10 @@ polynomiumCoefficients (Prod p q) = [prodCoefficient i | i <- [0..(pDeg + qDeg)]
     qDeg = degree q
     qCoeff j = if 0 <= j && j <= qDeg then qCoeffs !! j else 0
     pCoeff j = if 0 <= j && j <= pDeg then pCoeffs !! j else 0
-    prodCoefficient i = sum [(pCoeff j) * (qCoeff (i-j)) | j <- [0..(pDeg + qDeg)]]
+    prodCoefficient i = sum [pCoeff j * qCoeff (i-j) | j <- [0..(pDeg + qDeg)]]
 
 fromCoefficients :: (Num a) => [a] -> Polynomial a T
-fromCoefficients coeffs = fromCoefficients' (Const 0) (Const 1) coeffs
+fromCoefficients = fromCoefficients' (Const 0) (Const 1)
   where
     fromCoefficients' acc _ [] = acc
     fromCoefficients' acc x (a:as) = fromCoefficients' (Sum (Prod (Const a) x) acc) (Prod (Var T) x) as

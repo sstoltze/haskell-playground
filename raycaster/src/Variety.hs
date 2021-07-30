@@ -6,6 +6,7 @@ import Space
 import Polynomial
 import Raycaster
 
+import Data.Functor((<&>))
 import Data.List (sort)
 import Data.Maybe (listToMaybe)
 
@@ -15,17 +16,17 @@ data Variety = Variety { varietyPolynomial :: Polynomial Double XYZ
 
 instance SceneObject Variety where
   intersectRay
-    ray@(Ray { rayStart     = (Position  rx ry rz)
-             , rayDirection = rd@(Vector dx dy dz) })
-    var@(Variety { varietyPolynomial = p
-                 , varietyColour = colour
-                 }) =
-    listToMaybe solutions >>= return . constructHit
+    ray@Ray { rayStart     = (Position  rx ry rz)
+            , rayDirection = rd@(Vector dx dy dz) }
+    var@Variety { varietyPolynomial = p
+                , varietyColour = colour
+                 } =
+    listToMaybe solutions <&> constructHit
     where
       newVariables = \case
-        X -> (Const rx) + (Const dx) * (Var T)
-        Y -> (Const ry) + (Const dy) * (Var T)
-        Z -> (Const rz) + (Const dz) * (Var T)
+        X -> Const rx + Const dx * Var T
+        Y -> Const ry + Const dy * Var T
+        Z -> Const rz + Const dz * Var T
       pT = expand $ changeVariables newVariables p
       solutions = filter (> 0) $ sort $ newton (\a -> abs a < 0.0001) 100 pT
       constructHit t = let normal = varietyNormal var $ rayPoint t ray
@@ -40,11 +41,11 @@ instance SceneObject Variety where
 
 spherePoly :: Position Double -> Double -> Polynomial Double XYZ
 spherePoly (Position x0 y0 z0) r =
-  (varX * varX) + (varY * varY) + (varZ * varZ) - (Const r) * (Const r)
+  (varX * varX) + (varY * varY) + (varZ * varZ) - Const r * Const r
   where
-    varX = (Var X) - (Const x0)
-    varY = (Var Y) - (Const y0)
-    varZ = (Var Z) - (Const z0)
+    varX = Var X - Const x0
+    varY = Var Y - Const y0
+    varZ = Var Z - Const z0
 
 sphereVariety :: Position Double -> Double -> Colour -> Variety
 sphereVariety centre radius colour = Variety { varietyPolynomial = spherePoly centre radius
@@ -73,11 +74,11 @@ varietyChangeVariables f v =
   v { varietyPolynomial = changeVariables f $ varietyPolynomial v }
 
 varietyTranslate :: Vector Double -> Variety -> Variety
-varietyTranslate (Vector dx dy dz) v = varietyChangeVariables translate v
+varietyTranslate (Vector dx dy dz) = varietyChangeVariables translate
   where
-    translate X = (Var X) - (Const dx)
-    translate Y = (Var Y) - (Const dy)
-    translate Z = (Var Z) - (Const dz)
+    translate X = Var X - Const dx
+    translate Y = Var Y - Const dy
+    translate Z = Var Z - Const dz
 
 varietyExpand :: Variety -> Variety
 varietyExpand v = v { varietyPolynomial = expand $ varietyPolynomial v }
@@ -88,24 +89,24 @@ varietyRotate axis angle = rotateFromZ . rotateAroundZ angle . rotateToZ
     normalAxis@(Vector nx ny nz) = vectorNormalize axis
     -- Axis projected to YZ plane
     (Vector _ sinA cosA) = if vectorParallel normalAxis (Vector 1 0 0)
-      then (Vector 0 0 1)
+      then Vector 0 0 1
       else vectorNormalize (normalAxis { vecX = 0 })
     -- The relevant coordinates from the rotation to the YZ plane
     (sinB, cosB) = (-nx, sinA * ny + cosA * nz)
     -- Rotation around Z-axis
     rotateAroundZ a = varietyChangeVariables (rotateZ a)
-    rotateZ a X = (Const $ cos a) * Var X - (Const $ sin a) * Var Y
-    rotateZ a Y = (Const $ sin a) * Var X + (Const $ cos a) * Var Y
+    rotateZ a X = Const (cos a) * Var X - Const (sin a) * Var Y
+    rotateZ a Y = Const (sin a) * Var X + Const (cos a) * Var Y
     rotateZ _ Z = Var Z
     rotateToZ = rotateAroundY cosB sinB . rotateAroundX cosA sinA
     rotateAroundX c s = varietyChangeVariables (rotateVarToXZ c s)
     rotateVarToXZ _ _ X = Var X
-    rotateVarToXZ c s Y = (Const c) * (Var Y) - (Const s) * Var Z
-    rotateVarToXZ c s Z = (Const s) * (Var Y) + (Const c) * Var Z
+    rotateVarToXZ c s Y = Const c * Var Y - Const s * Var Z
+    rotateVarToXZ c s Z = Const s * Var Y + Const c * Var Z
     rotateAroundY c s = varietyChangeVariables (rotateVarToZ c s)
-    rotateVarToZ c s X = (Const c) * (Var X) - (Const s) * (Var Z)
+    rotateVarToZ c s X = Const c * Var X - Const s * Var Z
     rotateVarToZ _ _ Y = Var Y
-    rotateVarToZ c s Z = (Const s) * (Var X) + (Const c) * (Var Z)
+    rotateVarToZ c s Z = Const s * Var X + Const c * Var Z
     rotateFromZ = rotateAroundX cosA (-sinA) . rotateAroundY cosB (-sinB)
 
 cylinderVariety :: Position Double -> Vector Double -> Double -> Colour -> Variety
@@ -119,7 +120,7 @@ cylinderVariety point axis radius colour =
     zAxis = Vector 0 0 1
     axisOfRotation = crossProduct axis zAxis
     angleOfRotation = vectorAngle axis zAxis
-    zCylinderPoly = (Var X) * (Var X) + (Var Y) * (Var Y) - (Const radius) * (Const radius)
+    zCylinderPoly = Var X * Var X + Var Y * Var Y - Const radius * Const radius
 
 planeVariety :: Position Double -> Vector Double -> Colour -> Variety
 planeVariety point normal colour =

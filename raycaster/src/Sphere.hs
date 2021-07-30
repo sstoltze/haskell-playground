@@ -11,11 +11,11 @@ data Sphere = Sphere { sphereCentre :: Position Double
 
 instance SceneObject Sphere where
   intersectRay
-    ray@(Ray { rayStart     = (Position rx ry rz)
-             , rayDirection = (Vector   dx dy dz) })
-    (Sphere { sphereCentre = centre@(Position sx sy sz)
-            , sphereRadius = r
-            , sphereColour = colour }) =
+    ray@Ray { rayStart     = (Position rx ry rz)
+            , rayDirection = (Vector   dx dy dz) }
+    Sphere { sphereCentre = centre@(Position sx sy sz)
+           , sphereRadius = r
+           , sphereColour = colour } =
     let a = dx*dx+dy*dy+dz*dz
         b = 2 * dx * (rx - sx) + 2 * dy * (ry - sy) + 2 * dz * (rz - sz)
         c = sx*sx + sy*sy + sz*sz - r*r + rx*rx + ry*ry + rz*rz - 2 * (rx*sx + ry*sy + rz*sz)

@@ -53,7 +53,7 @@ data TransmutedObject a = TransmutedObject { transmutedObject :: a
                                            }
 
 instance SceneObject a => SceneObject (TransmutedObject a) where
-  intersectRay r x = intersectRay r (transmutedObject x) >>= \h -> return $ h {hitColour = (transmutedMaterial x) h}
+  intersectRay r x = intersectRay r (transmutedObject x) >>= \h -> return $ h { hitColour = transmutedMaterial x h }
 
 rayIntersections :: SceneObject a => Ray Double -> [a] -> [HitData]
 rayIntersections ray objects = hitSort $ mapMaybe (intersectRay ray) objects
@@ -70,8 +70,8 @@ data Camera = Camera { cameraPosition :: Position Double
                      , cameraResolution :: Resolution
                      }
 
-data Light = Light { lightPosition :: Position Double
-                   }
+newtype Light = Light { lightPosition :: Position Double
+                      }
 
 data Scene a = Scene { sceneObject :: a
                      , sceneBackground :: Colour
@@ -80,11 +80,11 @@ data Scene a = Scene { sceneObject :: a
                      }
 
 cameraRay :: Camera -> Int -> Int -> Ray Double
-cameraRay (Camera { cameraPosition = p
+cameraRay Camera { cameraPosition = p
                   , cameraUp = u
                   , cameraDirection = d
                   , cameraResolution = res
-                  }) x y =
+                  } x y =
   Ray { rayStart = p
       , rayDirection = vectorNormalize $ positionSubtract p1 p
       }
@@ -113,7 +113,7 @@ picture s = ImageRGB8 (generateImage snap width height)
     calculateColour hit = colourScale avgCosine (hitColour hit)
        where
          average [] = 0
-         average xs = (sum xs) / (fromIntegral $ length xs)
+         average xs = sum xs / fromIntegral (length xs)
          avgCosine = average $ map scaleFromLight $ sceneLights s
          scaleFromLight light =
            if isBlocked light

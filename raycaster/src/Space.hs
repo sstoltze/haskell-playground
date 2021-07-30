@@ -43,7 +43,7 @@ vectorNormalize v =
     len = vectorLength v
 
 vectorParallel :: (Eq a, Floating a) => Vector a -> Vector a -> Bool
-vectorParallel v w = (vectorLength $ crossProduct v w) == 0
+vectorParallel v w = vectorLength (crossProduct v w) == 0
 
 vectorOrthogonal :: (Eq a, Num a) => Vector a -> Vector a -> Bool
 vectorOrthogonal v w = dotProduct v w == 0
