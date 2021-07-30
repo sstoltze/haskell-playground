@@ -6,7 +6,11 @@ import System.IO
 main :: IO ()
 main = do
   input <- readInput
-  putStrLn (digraphDot $ digraphFromAlphabeticalOrder input)
+  let g = digraphFromAlphabeticalOrder input
+  let cycle = case digraphCycle g of
+        Just c -> c
+        Nothing -> []
+  putStrLn (digraphDot $ digraphColourPath "red" cycle g)
 
 readInput :: IO [String]
 readInput = readInput' []
