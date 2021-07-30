@@ -15,12 +15,12 @@ main = do
   void $ flip runKeycloak kcConfig $ do
     jwt <- getJWT "demo" "demo"
     claims <- verifyJWT jwt
-    liftIO $ putStrLn $ "Claims decoded from token:\n" ++ (show claims) ++ "\n\n"
+    liftIO $ putStrLn $ "Claims decoded from token:\n" ++ show claims ++ "\n\n"
     let user = getClaimsUser claims
-    liftIO $ putStrLn $ "User decoded from claims:\n" ++ (show user) ++ "\n\n"
+    liftIO $ putStrLn $ "User decoded from claims:\n" ++ show user ++ "\n\n"
     let resourceId = ResourceId "SecretStuff"
     isAuth <- isAuthorized resourceId (ScopeName "view") jwt
-    liftIO $ putStrLn $ "User has access to resource:\n" ++ (show isAuth) ++ "\n\n"
+    liftIO $ putStrLn $ "User has access to resource:\n" ++ show isAuth ++ "\n\n"
     -- This required going to Users -> demo -> Role Mappings -> Client Roles -> demo -> Add uma_protection, and it still does not work
     resource <- getResource resourceId jwt
-    liftIO $ putStrLn $ "Resource:\n" ++ (show resource)
+    liftIO $ putStrLn $ "Resource:\n" ++ show resource
