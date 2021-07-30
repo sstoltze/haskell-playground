@@ -9,7 +9,6 @@ import Brick.Widgets.Border
 import Brick.Widgets.Border.Style
 import Brick.Widgets.Center
 
-import Control.Monad (void)
 import Data.List (elemIndex, delete)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
@@ -54,7 +53,9 @@ initialState = noneSelected listOptions
 
 -- Display
 main :: IO ()
-main = void (defaultMain app initialState)
+main = do
+  s <- defaultMain app initialState
+  print $ selectedOptions s
 
 displayOptions :: State -> Widget Name
 displayOptions s = border $ vLimit 3 $ displayText s (options s)
@@ -110,13 +111,14 @@ handleSelect s = case cursor s of
                        then delete t (selectedOptions s)
                        else t : selectedOptions s
 
-data Movement = UpRow | DownRow
+data Movement = UpRow
+              | DownRow
 
 runCommand :: State -> State
 runCommand = id
 
-selectionCursor :: State -> Cursor -> Cursor
-selectionCursor s defaultCursor =
+selectTextCursor :: State -> Cursor -> Cursor
+selectTextCursor s defaultCursor =
   if not (null (options s))
   then fromMaybe (TextCursor (head (options s))) (prevCursor s)
   else defaultCursor
@@ -124,7 +126,7 @@ selectionCursor s defaultCursor =
 changeRow :: State -> Movement -> State
 changeRow s DownRow =
   case cursor s of
-    HeadlineCursor -> s { cursor = selectionCursor s ButtonCursor }
+    HeadlineCursor -> s { cursor = selectTextCursor s ButtonCursor }
     TextCursor _ -> s { cursor = ButtonCursor
                       , prevCursor = Just (cursor s)
                       }
@@ -136,7 +138,7 @@ changeRow s UpRow =
     TextCursor _ -> s { cursor = HeadlineCursor
                       , prevCursor = Just (cursor s)
                       }
-    ButtonCursor -> s { cursor = selectionCursor s HeadlineCursor }
+    ButtonCursor -> s { cursor = selectTextCursor s HeadlineCursor }
 
 handleEvent :: State -> BrickEvent Name Tick -> EventM Name (Next State)
 handleEvent s (VtyEvent (V.EvKey V.KRight []))      = continue $ selectNextOption s
