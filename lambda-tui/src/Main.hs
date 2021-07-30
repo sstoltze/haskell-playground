@@ -85,21 +85,25 @@ cursorText s c t = if c == cursor s
 -- Update state
 selectNextOption :: State -> State
 selectNextOption state = case cursor state of
-                           TextCursor t -> state { cursor = nextOption t state}
+                           TextCursor t -> state { cursor = nextOption t state }
                            _            -> state
   where
+    opts = options state
+    nextIndex i = if i < length opts - 1 then i+1 else i
     nextOption t s = maybe (cursor s)
-                            (\i -> TextCursor $ options s !! (if i < length (options s) - 1 then i+1 else i))
-                            (elemIndex t (options s))
+                           (\i -> TextCursor $ opts !! nextIndex i)
+                           (elemIndex t opts)
 
 selectPrevOption :: State -> State
 selectPrevOption state = case cursor state of
-                       TextCursor t -> state { cursor = prevSelection t state }
+                       TextCursor t -> state { cursor = prevOption t state }
                        _            -> state
   where
-    prevSelection t s = maybe (cursor s)
-                              (\i -> TextCursor $ options s !! (if i >= 1 then i - 1 else i))
-                              (elemIndex t (options s))
+    opts = options state
+    prevIndex i = if i >= 1 then i - 1 else i
+    prevOption t s = maybe (cursor s)
+                           (\i -> TextCursor $ opts !! prevIndex i)
+                           (elemIndex t opts)
 
 handleSelect :: State -> EventM Name (Next State)
 handleSelect s = case cursor s of
@@ -153,8 +157,7 @@ handleEvent s _                                     = continue s
 -- Attributes
 attributes :: AttrMap
 attributes = attrMap V.defAttr
-  [ (selectedAttr, V.currentAttr `V.withStyle` V.bold `V.withStyle` V.standout `V.withStyle` V.underline)
-  ]
+  [ (selectedAttr, V.currentAttr `V.withStyle` V.bold `V.withStyle` V.standout `V.withStyle` V.underline) ]
 
 selectedAttr :: AttrName
 selectedAttr = "selectedAttr"
