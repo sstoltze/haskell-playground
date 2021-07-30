@@ -7,7 +7,7 @@ module StateMachineWithTypedTransitions where
 
 import           Control.Monad.IO.Class
 import           Data.List.NonEmpty
-import           Data.Semigroup
+import           Data.Semigroup()
 import qualified Data.Text as T
 
 import           Checkout (Card(..)
@@ -49,8 +49,8 @@ data CancelState m = NoCardCancel (State m NoCard)
 
 -- Implementation
 fillCart :: (Checkout m, MonadIO m) => State m NoItems -> m (State m HasItems)
-fillCart noItems = mkItem <$> ConsoleInput.prompt "First item:"
-  >>= select (NoItemsSelect noItems)
+fillCart noItems = ConsoleInput.prompt "First item:"
+  >>= select (NoItemsSelect noItems) . mkItem
   >>= selectMoreItems
 
 selectMoreItems :: (Checkout m, MonadIO m) => State m HasItems -> m (State m HasItems)
@@ -58,8 +58,8 @@ selectMoreItems s = do
   more <- ConsoleInput.confirm "More items?"
   if more
     then
-      mkItem <$> ConsoleInput.prompt "Next item:"
-      >>= select (HasItemsSelect s)
+      ConsoleInput.prompt "Next item:"
+      >>= select (HasItemsSelect s) . mkItem
       >>= selectMoreItems
     else return s
 
