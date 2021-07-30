@@ -1,6 +1,6 @@
 module Svg where
 
-import Data.List (intersperse)
+import Data.List (intercalate, intersperse)
 import Types
 import Text.Printf
 
@@ -34,7 +34,7 @@ class Svg a where
 
 groupSvg :: Svg a => [a] -> String
 groupSvg as =
-  "<g>\n" ++ foldr (++) "" svgElements ++ "</g>"
+  "<g>\n" ++ concat svgElements ++ "</g>"
   where
     svgElements = intersperse "\n" $ map showSvg as
 
@@ -68,16 +68,16 @@ svgLine d =
     svgPoints = foldr (\p r -> svgPoint p ++ " " ++ r) "" $ datasetPoints d
 
 svgCircle :: (PrintfArg a) => Dataset a -> String
-svgCircle d = foldr (++) "" svgCircles
+svgCircle d = concat svgCircles
   where
     colour = hexColour $ datasetColour d
     pointToSvgCircle p =
       printf "<circle cx='%.2f' cy='%.2f' r='1.2' fill='%s' stroke='%s' />\n" (pointX p) (pointY p) colour colour
-    svgCircles = fmap pointToSvgCircle $ datasetPoints d
+    svgCircles = pointToSvgCircle <$> datasetPoints d
 
 instance PrintfArg a => Svg (Dataset a) where
-  showSvg d@(Dataset { datasetType = Line }) = svgLine d
-  showSvg d@(Dataset { datasetType = Circles }) = svgCircle d
+  showSvg d@Dataset { datasetType = Line } = svgLine d
+  showSvg d@Dataset { datasetType = Circles } = svgCircle d
 
 svgChart :: (PrintfArg a) => Chart a -> String
 svgChart c =
@@ -86,10 +86,10 @@ svgChart c =
   ++ svgTitles c
   where
     datasets = chartData c
-    svgDatasets = foldr (++) "" $ intersperse "\n" $ map showSvg datasets
+    svgDatasets = intercalate "\n" $ map showSvg datasets
 
 svgScaleDataset :: (Fractional a, Ord a) => a -> a -> Dataset a -> Dataset a
-svgScaleDataset width height d@(Dataset {datasetPoints = points}) =
+svgScaleDataset width height d@Dataset {datasetPoints = points} =
   d { datasetPoints = fmap scale points }
   where
     ys = map pointY points
@@ -100,10 +100,10 @@ svgScaleDataset width height d@(Dataset {datasetPoints = points}) =
     minX = minimum xs
     maxX = maximum xs
     deltaX = maxX - minX
-    scale p = (width * ((pointX p) - minX) / deltaX, height - height * ((pointY p) - minY) / deltaY)
+    scale p = (width * (pointX p - minX) / deltaX, height - height * (pointY p - minY) / deltaY)
 
 svgScaleChart :: (Fractional a, Ord a) => Chart a -> Chart a
-svgScaleChart c@(Chart { chartWidth = w, chartHeight = h, chartData = d }) =
+svgScaleChart c@Chart { chartWidth = w, chartHeight = h, chartData = d } =
   c { chartData = fmap (svgScaleDataset (fromIntegral w) (fromIntegral h)) d }
 
 instance (PrintfArg a, Fractional a, Ord a) => Svg (Chart a) where

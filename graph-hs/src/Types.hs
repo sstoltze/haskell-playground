@@ -11,10 +11,10 @@ mkColour :: Int -> Int -> Int -> Colour
 mkColour r g b = Colour { colourRed = r, colourGreen = g, colourBlue = b }
 
 hexColour :: Colour -> String
-hexColour (Colour { colourRed = r, colourGreen = g, colourBlue = b}) =
+hexColour Colour { colourRed = r, colourGreen = g, colourBlue = b} =
   "#" ++ hex r ++ hex g ++ hex b
   where
-    hex n = intToDigit (n `div` 16) : intToDigit (n `mod` 16) : []
+    hex n = [intToDigit (n `div` 16), intToDigit (n `mod` 16)]
 
 type Point a = (a, a)
 
