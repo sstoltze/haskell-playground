@@ -1,11 +1,11 @@
-module Lib where
+module Digraph where
 
 import Data.List (nub)
 
-import Text.Printf
+import Text.Printf (printf, PrintfArg)
 
-data Node a = Node { nodeName :: a
-                   } deriving (Eq, Show)
+newtype Node a = Node { nodeName :: a
+                      } deriving (Eq, Show)
 
 data Edge a = Edge { edgeStart :: Node a
                    , edgeEnd :: Node a
@@ -24,8 +24,8 @@ edgeDot e = printf "  \"%v\" -> \"%v\" %v" (nodeName $ edgeStart e) (nodeName $ 
 edgeEq :: (Eq a) => Edge a -> Edge a -> Bool
 edgeEq e1 e2 = edgeStart e1 == edgeStart e2 && edgeEnd e1 == edgeEnd e2
 
-data Digraph a = Digraph { digraphEdges :: [Edge a]
-                         } deriving (Eq, Show)
+newtype Digraph a = Digraph { digraphEdges :: [Edge a]
+                            } deriving (Eq, Show)
 
 digraphStartNodes :: (Eq a) => Digraph a -> [Node a]
 digraphStartNodes = nub . foldr ((:) . edgeStart) [] . digraphEdges
@@ -49,9 +49,6 @@ type Path a = [Edge a]
 
 pathEnd :: Path a -> Node a
 pathEnd p = edgeEnd $ last p
-
-cycleDot :: (PrintfArg a) => Path a -> String
-cycleDot = concatMap ((++ " [color=red]\n") . edgeDot)
 
 digraphColourPath :: (Eq a) => String -> Path a -> Digraph a -> Digraph a
 digraphColourPath _ [] g = g

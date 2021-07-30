@@ -4,14 +4,12 @@ main main0,1
 
 ./app/Main.hs,64
 module Main Main0,1
-main main5,6
-readInput readInput14,15
+main main6,7
+readInput readInput13,14
 
-./src/Lib.hs,919
-module Lib Lib0,1
-data Node Node6,7
-data Node a = Node Node6,7
-data Node a = Node { nodeName nodeName6,7
+./src/Digraph.hs,817
+newtype Node Node6,7
+newtype Node a = Node { nodeName nodeName6,7
 data Edge Edge9,10
 data Edge a = Edge Edge9,10
 data Edge a = Edge { edgeStart edgeStart9,10
@@ -21,9 +19,8 @@ mkEdge mkEdge14,15
 setEdgeColour setEdgeColour17,18
 edgeDot edgeDot20,21
 edgeEq edgeEq23,24
-data Digraph Digraph26,27
-data Digraph a = Digraph Digraph26,27
-data Digraph a = Digraph { digraphEdges digraphEdges26,27
+newtype Digraph Digraph26,27
+newtype Digraph a = Digraph { digraphEdges digraphEdges26,27
 digraphStartNodes digraphStartNodes29,30
 digraphEndNodes digraphEndNodes32,33
 digraphNodes digraphNodes35,36
@@ -31,10 +28,9 @@ digraphDot digraphDot41,42
 testDigraph testDigraph44,45
 type Path Path47,48
 pathEnd pathEnd49,50
-cycleDot cycleDot52,53
-digraphColourPath digraphColourPath55,56
-digraphCycle digraphCycle64,65
-digraphFromAlphabeticalOrder digraphFromAlphabeticalOrder81,82
+digraphColourPath digraphColourPath52,53
+digraphCycle digraphCycle61,62
+digraphFromAlphabeticalOrder digraphFromAlphabeticalOrder78,79
 
 ./Setup.hs,15
 main main1,2
