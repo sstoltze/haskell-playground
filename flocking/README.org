@@ -1,0 +1,9 @@
+
+* flocking
+A simple flocking app.
+
+#+begin_src shell
+stack run
+convert -delay 10 -loop 0 /tmp/flock*.png flock.gif
+icat flock.gif
+#+end_src

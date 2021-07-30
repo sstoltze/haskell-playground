@@ -1,0 +1,55 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 779975ae243d10557a2b621d861945fd135ce1be4bb735d6ef5326aa4d43ba0b
+
+name:           flocking
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/sstoltze/flocking#readme>
+homepage:       https://github.com/sstoltze/flocking#readme
+bug-reports:    https://github.com/sstoltze/flocking/issues
+author:         Sarah Stoltze
+maintainer:     sstoltze@gmail.com
+copyright:      2021 Sarah Stoltze
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.org
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/sstoltze/flocking
+
+library
+  exposed-modules:
+      Entity
+      Flock
+      Space
+  other-modules:
+      Paths_flocking
+  hs-source-dirs:
+      src
+  build-depends:
+      JuicyPixels
+    , base >=4.7 && <5
+    , random
+  default-language: Haskell2010
+
+executable flocking-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_flocking
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      JuicyPixels
+    , base >=4.7 && <5
+    , flocking
+    , random
+  default-language: Haskell2010
