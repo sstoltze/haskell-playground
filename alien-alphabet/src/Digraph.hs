@@ -1,7 +1,8 @@
 module Digraph where
 
 import Data.List (nub)
-
+import Data.Text (Text, pack)
+import Data.Text.ICU (LocaleName(Root), breaks, breakCharacter, brkBreak)
 import Text.Printf (printf, PrintfArg)
 
 newtype Node a = Node { nodeName :: a
@@ -91,19 +92,18 @@ digraphCycle Digraph { digraphEdges = edges } = digraphCycle' $ fmap (\e -> (edg
       let newEdges = filter ((pathEnd' p ==) . edgeStart) edges
       in updatePaths' ps (fmap (\e -> (n, e:p)) newEdges ++ acc)
 
-digraphFromAlphabeticalOrder :: [String] -> Digraph Char
+digraphFromAlphabeticalOrder :: [String] -> Digraph Text
 digraphFromAlphabeticalOrder ws = digraphFromAlphabeticalOrder' ws (Digraph [])
   where
-    digraphFromAlphabeticalOrder' [] g = g
-    digraphFromAlphabeticalOrder' [_] g = g
     digraphFromAlphabeticalOrder' (x:y:xs) g = digraphFromAlphabeticalOrder' (y:xs) (updateDigraph x y g)
+    digraphFromAlphabeticalOrder' _ g = g
     updateDigraph x y g =
-      case compareStrings x y of
+      case compareStrings (splitToGraphemes $ pack x) (splitToGraphemes $ pack y) of
         Just (a,b) -> g { digraphEdges = mkEdge a b : digraphEdges g }
         Nothing    -> g
-    compareStrings [] _ = Nothing
+    splitToGraphemes s = breaks (breakCharacter Root) s
     compareStrings (a:as) (b:bs) =
       if a == b
       then compareStrings as bs
-      else Just (a, b)
+      else Just (brkBreak a, brkBreak b)
     compareStrings _ _ = Nothing

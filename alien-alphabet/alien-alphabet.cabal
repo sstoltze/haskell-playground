@@ -32,6 +32,8 @@ library
       src
   build-depends:
       base >=4.7 && <5
+    , text
+    , text-icu
   default-language: Haskell2010
 
 executable alien-alphabet-exe
@@ -44,6 +46,8 @@ executable alien-alphabet-exe
   build-depends:
       alien-alphabet
     , base >=4.7 && <5
+    , text
+    , text-icu
   default-language: Haskell2010
 
 test-suite alien-alphabet-test
@@ -57,4 +61,6 @@ test-suite alien-alphabet-test
   build-depends:
       alien-alphabet
     , base >=4.7 && <5
+    , text
+    , text-icu
   default-language: Haskell2010
