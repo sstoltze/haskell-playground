@@ -1,41 +1,0 @@
-
-./test/Spec.hs,15
-main main0,1
-
-./app/Main.hs,64
-module Main Main0,1
-main main6,7
-readInput readInput13,14
-
-./src/Digraph.hs,968
-newtype Node Node6,7
-newtype Node a = Node { nodeName nodeName6,7
-type Colour Colour9,10
-data Edge Edge11,12
-data Edge a = Edge Edge11,12
-data Edge a = Edge { edgeStart edgeStart11,12
-                   , edgeEnd edgeEnd12,13
-                   , edgeColour edgeColour13,14
-mkEdge mkEdge16,17
-setEdgeColour setEdgeColour19,20
-removeEdgeColour removeEdgeColour22,23
-edgeDot edgeDot25,26
-edgeEq edgeEq29,30
-instance Eq Eq a => Eq (Edge a)32,33
-  (=(==)33,34
-type Path Path35,36
-pathStart pathStart37,38
-pathEnd pathEnd40,41
-newtype Digraph Digraph43,44
-newtype Digraph a = Digraph { digraphEdges digraphEdges43,44
-testDigraph testDigraph46,47
-digraphStartNodes digraphStartNodes49,50
-digraphEndNodes digraphEndNodes52,53
-digraphNodes digraphNodes55,56
-digraphDot digraphDot61,62
-digraphColourPath digraphColourPath64,65
-digraphCycle digraphCycle73,74
-digraphFromAlphabeticalOrder digraphFromAlphabeticalOrder93,94
-
-./Setup.hs,15
-main main1,2
