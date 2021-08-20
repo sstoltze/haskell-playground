@@ -1,0 +1,61 @@
+name:                service-search-suggestions
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/sstoltze/protoc-person#readme
+license:             BSD3
+author:              Sarah Stoltze
+maintainer:          sstoltze@gmail.com
+copyright:           2021 Sarah Stoltze
+category:            Web
+
+custom-setup:
+  dependencies:
+    - base
+    - Cabal
+    - proto-lens-setup
+
+build-tools: proto-lens-protoc:proto-lens-protoc
+
+extra-source-files: proto/**/*.proto
+
+library:
+  dependencies:
+    - base
+    - proto-lens-runtime
+
+  exposed-modules:
+    - Proto.Search
+    - Proto.Search_Fields
+
+executables:
+  service-search-suggestions:
+    main: Main.hs
+    source-dirs:
+      - app
+      - src
+    dependencies:
+      - base
+      - service-search-suggestions
+      - microlens
+      - proto-lens
+      - text
+      - amqp
+      - dotenv
+      - bytestring
+
+  send-test-requests:
+    main: Send.hs
+    source-dirs:
+      - test
+      - src
+    dependencies:
+      - base
+      - service-search-suggestions
+      - microlens
+      - proto-lens
+      - text
+      - amqp
+      - dotenv
+      - bytestring
+      - random

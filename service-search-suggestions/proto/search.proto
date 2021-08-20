@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package servicesearchsuggestions;
+
+message InternalError {}
+message InvalidRequestError {
+    string error = 1;
+}
+
+message GetSearchSuggestionsRequest {
+    string query = 1;
+    uint32 limit = 2;
+    bool is_safe = 3;
+}
+
+message GetSearchSuggestionsResponse {
+    message Success {
+        repeated string result = 1;
+    }
+
+    oneof result {
+        Success success = 1;
+        InternalError internal_error = 2;
+        InvalidRequestError invalid_request_error = 3;
+    }
+}
+
+message SubmitSearchQueryRequest {
+    string query = 1;
+}
+
+message SubmitSearchQueryResponse {
+    message Success {}
+
+    oneof result {
+        Success success = 1;
+        InternalError internal_error = 2;
+        InvalidRequestError invalid_request_error = 3;
+    }
+}
+
+service ServiceDocumentIdService {
+    rpc GetSearchSuggestions(GetSearchSuggestionsRequest) returns (GetSearchSuggestionsResponse);
+}
