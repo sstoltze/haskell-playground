@@ -36,14 +36,14 @@ library
     , proto-lens-runtime
   default-language: Haskell2010
 
-executable send-suggestions
+executable send-test-requests
   main-is: Send.hs
   other-modules:
       Amqp
-      GetSearchSuggestions
       Handler
+      Handlers.GetSearchSuggestions
+      Handlers.SubmitSearchQuery
       Proto
-      SubmitSearchQuery
       Paths_service_search_suggestions
   hs-source-dirs:
       test
@@ -66,10 +66,10 @@ executable service-search-suggestions
   main-is: Main.hs
   other-modules:
       Amqp
-      GetSearchSuggestions
       Handler
+      Handlers.GetSearchSuggestions
+      Handlers.SubmitSearchQuery
       Proto
-      SubmitSearchQuery
       Paths_service_search_suggestions
   hs-source-dirs:
       app

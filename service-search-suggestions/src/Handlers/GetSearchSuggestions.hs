@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module GetSearchSuggestions where
+module Handlers.GetSearchSuggestions where
 
 import Data.Text
 import Data.Either (fromRight)

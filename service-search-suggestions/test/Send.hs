@@ -23,10 +23,10 @@ import qualified Data.ProtoLens.Message as Proto (Message)
 import qualified Proto.Search as Search
 
 import Amqp
-import GetSearchSuggestions (routingKey, buildGetSearchSuggestionsRequest)
+import Handlers.GetSearchSuggestions (routingKey, buildGetSearchSuggestionsRequest)
 import Handler
 import Proto
-import SubmitSearchQuery (routingKey, buildSubmitSearchQueryRequest)
+import Handlers.SubmitSearchQuery (routingKey, buildSubmitSearchQueryRequest)
 
 randString :: Int -> IO Text
 randString n = liftM (pack . take n . randomRs ('a','z')) newStdGen
@@ -60,10 +60,10 @@ receiveSearchQuery :: Channel -> Text -> IO ()
 receiveSearchQuery = receiveResponse "SubmitSearchQuery" (decodeProtobuf :: BL.ByteString -> Search.SubmitSearchQueryResponse)
 
 sendSearchSuggestions :: Channel -> Text -> Text -> Text -> IO ()
-sendSearchSuggestions = sendRequest "GetSearchSuggestions" buildGetSearchSuggestionsRequest GetSearchSuggestions.routingKey
+sendSearchSuggestions = sendRequest "GetSearchSuggestions" buildGetSearchSuggestionsRequest Handlers.GetSearchSuggestions.routingKey
 
 sendSearchQuery :: Channel -> Text -> Text -> Text -> IO ()
-sendSearchQuery = sendRequest "SubmitSearchQuery" buildSubmitSearchQueryRequest SubmitSearchQuery.routingKey
+sendSearchQuery = sendRequest "SubmitSearchQuery" buildSubmitSearchQueryRequest Handlers.SubmitSearchQuery.routingKey
 
 sendAndReceive ::
   Channel

@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import Control.Monad (forM_)
 import Data.Functor (void)
 import Data.Text
 
@@ -9,8 +10,8 @@ import Network.AMQP
 
 import Amqp
 import Handler
-import qualified GetSearchSuggestions (handler)
-import qualified SubmitSearchQuery (handler)
+import qualified Handlers.GetSearchSuggestions (handler)
+import qualified Handlers.SubmitSearchQuery (handler)
 
 main :: IO ()
 main = do
@@ -19,11 +20,10 @@ main = do
   putStrLn "Create channel"
   channel <- createChannel conn
   putStrLn "Setup handler"
-  setupHandlerQueue channel GetSearchSuggestions.handler
-  setupHandlerQueue channel SubmitSearchQuery.handler
+  let handlers = [Handlers.GetSearchSuggestions.handler, Handlers.SubmitSearchQuery.handler]
+  forM_ handlers $ setupHandlerQueue channel
 
-  runHandler channel GetSearchSuggestions.handler
-  runHandler channel SubmitSearchQuery.handler
+  forM_ handlers $ runHandler channel
 
   void getLine
 

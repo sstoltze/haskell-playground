@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module SubmitSearchQuery where
+module Handlers.SubmitSearchQuery where
 
 import Data.Text
 import Data.Either (fromRight)
