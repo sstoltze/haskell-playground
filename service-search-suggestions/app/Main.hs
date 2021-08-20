@@ -1,17 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import Control.Monad (forM_)
 import Data.Functor (void)
-import Data.Text
 
 -- https://hackage.haskell.org/package/amqp-0.22.0/docs/Network-AMQP.html
 import Network.AMQP
 
 import Amqp
 import Handler
-import qualified Handlers.GetSearchSuggestions (handler)
-import qualified Handlers.SubmitSearchQuery (handler)
+import Handlers.GetSearchSuggestions (handler)
+import Handlers.SubmitSearchQuery (handler)
 
 main :: IO ()
 main = do

@@ -41,4 +41,5 @@ message SubmitSearchQueryResponse {
 
 service ServiceDocumentIdService {
     rpc GetSearchSuggestions(GetSearchSuggestionsRequest) returns (GetSearchSuggestionsResponse);
+    rpc SubmitSearchQuery(SubmitSearchQueryRequest) returns (SubmitSearchQueryResponse);
 }

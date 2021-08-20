@@ -3,8 +3,8 @@
 module Amqp where
 
 import Configuration.Dotenv (loadFile, defaultConfig)
-import Data.Maybe (fromMaybe)
 import Data.Functor (void)
+import Data.Maybe (fromMaybe)
 import Data.Text (Text, pack)
 import System.Environment (lookupEnv)
 

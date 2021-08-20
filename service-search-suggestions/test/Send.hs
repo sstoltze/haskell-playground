@@ -4,9 +4,8 @@ module Main where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (liftM, forM_)
-
 import Data.ByteString.Lazy (toStrict)
-import qualified Data.ByteString.Lazy.Char8 as BL
+import Data.ByteString.Lazy.Char8 (ByteString)
 import Data.Either (fromRight)
 import Data.Functor (void)
 import Data.Maybe (fromJust)
@@ -23,10 +22,10 @@ import qualified Data.ProtoLens.Message as Proto (Message)
 import qualified Proto.Search as Search
 
 import Amqp
-import Handlers.GetSearchSuggestions (routingKey, buildGetSearchSuggestionsRequest)
 import Handler
+import Handlers.GetSearchSuggestions
+import Handlers.SubmitSearchQuery
 import Protobuf
-import Handlers.SubmitSearchQuery (routingKey, buildSubmitSearchQueryRequest)
 
 randString :: Int -> IO Text
 randString n = fmap (pack . take n . randomRs ('a','z')) newStdGen
@@ -34,7 +33,7 @@ randString n = fmap (pack . take n . randomRs ('a','z')) newStdGen
 randRange :: Int -> Int -> IO Int
 randRange a b = fmap (head . randomRs (a, b)) newStdGen
 
-receiveResponse :: (Proto.Message m) => String -> (BL.ByteString -> m) -> Channel -> Text -> IO ()
+receiveResponse :: (Proto.Message m) => String -> (ByteString -> m) -> Channel -> Text -> IO ()
 receiveResponse name decodeMessage channel queue =
   void $ consumeMsgs channel queue Ack handler
   where
@@ -50,17 +49,22 @@ sendRequest name builder routingKey channel replyTo correlationId q = do
   let request = newMsg { msgBody = encodeProtobuf (builder q)
                        , msgCorrelationID = Just correlationId
                        , msgReplyTo = Just replyTo
+                       , msgApplicationID = Just "haskell-app"
                        }
   void $ publishMsg channel (exchangeName directExchange) routingKey request
 
 receiveSearchSuggestions :: Channel -> Text -> IO ()
-receiveSearchSuggestions = receiveResponse "GetSearchSuggestions" (decodeProtobufWithDefault :: BL.ByteString -> Search.GetSearchSuggestionsResponse)
+receiveSearchSuggestions =
+  receiveResponse "GetSearchSuggestions" (decodeProtobufWithDefault :: ByteString -> Search.GetSearchSuggestionsResponse)
 
 receiveSearchQuery :: Channel -> Text -> IO ()
-receiveSearchQuery = receiveResponse "SubmitSearchQuery" (decodeProtobufWithDefault :: BL.ByteString -> Search.SubmitSearchQueryResponse)
+receiveSearchQuery =
+  receiveResponse "SubmitSearchQuery" (decodeProtobufWithDefault :: ByteString -> Search.SubmitSearchQueryResponse)
 
 sendSearchSuggestions :: Channel -> Text -> Text -> Text -> IO ()
-sendSearchSuggestions = sendRequest "GetSearchSuggestions" buildGetSearchSuggestionsRequest Handlers.GetSearchSuggestions.routingKey
+sendSearchSuggestions = sendRequest "GetSearchSuggestions" buildReq Handlers.GetSearchSuggestions.routingKey
+  where
+    buildReq q = buildGetSearchSuggestionsRequest q 10 True
 
 sendSearchQuery :: Channel -> Text -> Text -> Text -> IO ()
 sendSearchQuery = sendRequest "SubmitSearchQuery" buildSubmitSearchQueryRequest Handlers.SubmitSearchQuery.routingKey

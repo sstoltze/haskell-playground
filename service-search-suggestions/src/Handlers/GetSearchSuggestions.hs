@@ -1,18 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Handlers.GetSearchSuggestions where
 
-import Data.Text (Text)
 import Data.ByteString.Lazy.Char8 (ByteString)
+import Data.Text (Text, pack)
+import GHC.Word (Word32)
 
-import Lens.Micro
 import Data.ProtoLens (defMessage, showMessage)
+import Lens.Micro
 import qualified Proto.Search as Search
 import qualified Proto.Search_Fields as Search
 
 import Network.AMQP
 
 import Handler
-import Protobuf (encodeProtobuf, decodeProtobufWithDefault)
+import Protobuf
 
 buildGetSearchSuggestionsResponse :: [Text] -> Search.GetSearchSuggestionsResponse
 buildGetSearchSuggestionsResponse r =
@@ -24,23 +25,23 @@ buildGetSearchSuggestionsResponse r =
       defMessage
       & Search.result .~ r
 
-buildGetSearchSuggestionsRequest :: Text -> Search.GetSearchSuggestionsRequest
-buildGetSearchSuggestionsRequest query =
+buildGetSearchSuggestionsRequest :: Text -> Word32 -> Bool -> Search.GetSearchSuggestionsRequest
+buildGetSearchSuggestionsRequest query limit isSafe =
   defMessage
   & Search.query .~ query
-  & Search.limit .~ 10
-  & Search.isSafe .~ True
+  & Search.limit .~ limit
+  & Search.isSafe .~ isSafe
 
 routingKey :: Text
 routingKey = buildRoutingKey "v1" "get-search-suggestions"
 
 handle :: Message -> IO ByteString
 handle m = do
-  let msg = decodeProtobufWithDefault (msgBody m) :: Search.GetSearchSuggestionsRequest
+  let msg = decodeProtobuf (msgBody m) :: Either String Search.GetSearchSuggestionsRequest
   putStrLn "GetSearchResponse handler received:"
-  putStrLn $ showMessage msg
-  let response = ["test", "af", "haskell"]
-  let resp = buildGetSearchSuggestionsResponse response
+  putStrLn $ either ("Error: " ++) showMessage msg
+  let response = \req -> (req ^. Search.query) : ["test", "af", "haskell"]
+  let resp = either (buildInvalidRequestError . pack) (buildGetSearchSuggestionsResponse . response) msg
   return $ encodeProtobuf resp
 
 handler :: Handler
