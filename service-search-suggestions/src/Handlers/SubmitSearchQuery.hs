@@ -2,18 +2,16 @@
 module Handlers.SubmitSearchQuery where
 
 import Data.Text
-import Data.Either (fromRight)
-import Data.ByteString.Lazy (fromStrict, toStrict)
-import qualified Data.ByteString.Lazy.Char8 as BL
+import Data.ByteString.Lazy.Char8 (ByteString)
 
 import Lens.Micro
-import Data.ProtoLens (defMessage, encodeMessage, showMessage, decodeMessage)
+import Data.ProtoLens (defMessage, showMessage)
 import qualified Proto.Search as Search
 import qualified Proto.Search_Fields as Search
 
 import Handler
 import Network.AMQP
-import Protobuf (encodeProtobuf, decodeProtobuf)
+import Protobuf (encodeProtobuf, decodeProtobufWithDefault)
 
 searchQueryResponseSuccess :: Search.SubmitSearchQueryResponse
 searchQueryResponseSuccess =
@@ -31,9 +29,9 @@ handler = Handler { handlerRoutingKey = routingKey
                   , handlerHandler = handle
                   }
 
-handle :: Message -> IO BL.ByteString
+handle :: Message -> IO ByteString
 handle m = do
-  let msg = decodeProtobuf (msgBody m) :: Search.SubmitSearchQueryRequest
+  let msg = decodeProtobufWithDefault (msgBody m) :: Search.SubmitSearchQueryRequest
   putStrLn "SubmitSearchQuery handler received:"
   putStrLn $ showMessage msg
   let resp = searchQueryResponseSuccess

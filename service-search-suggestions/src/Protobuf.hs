@@ -2,12 +2,15 @@ module Protobuf where
 
 import Data.Either (fromRight)
 import Data.ByteString.Lazy (fromStrict, toStrict)
-import qualified Data.ByteString.Lazy.Char8 as BL
+import Data.ByteString.Lazy.Char8 (ByteString)
 import Data.ProtoLens (encodeMessage, decodeMessage, defMessage)
 import Data.ProtoLens.Message (Message)
 
-encodeProtobuf :: (Message m) => m -> BL.ByteString
+encodeProtobuf :: (Message m) => m -> ByteString
 encodeProtobuf = fromStrict . encodeMessage
 
-decodeProtobuf :: (Message m) => BL.ByteString -> m
-decodeProtobuf b = fromRight defMessage $ decodeMessage $ toStrict b
+decodeProtobuf :: (Message m) => ByteString -> Either String m
+decodeProtobuf b = decodeMessage $ toStrict b
+
+decodeProtobufWithDefault :: (Message m) => ByteString -> m
+decodeProtobufWithDefault = fromRight defMessage . decodeProtobuf

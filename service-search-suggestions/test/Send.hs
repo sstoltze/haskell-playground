@@ -54,10 +54,10 @@ sendRequest name builder routingKey channel replyTo correlationId q = do
   void $ publishMsg channel (exchangeName directExchange) routingKey request
 
 receiveSearchSuggestions :: Channel -> Text -> IO ()
-receiveSearchSuggestions = receiveResponse "GetSearchSuggestions" (decodeProtobuf :: BL.ByteString -> Search.GetSearchSuggestionsResponse)
+receiveSearchSuggestions = receiveResponse "GetSearchSuggestions" (decodeProtobufWithDefault :: BL.ByteString -> Search.GetSearchSuggestionsResponse)
 
 receiveSearchQuery :: Channel -> Text -> IO ()
-receiveSearchQuery = receiveResponse "SubmitSearchQuery" (decodeProtobuf :: BL.ByteString -> Search.SubmitSearchQueryResponse)
+receiveSearchQuery = receiveResponse "SubmitSearchQuery" (decodeProtobufWithDefault :: BL.ByteString -> Search.SubmitSearchQueryResponse)
 
 sendSearchSuggestions :: Channel -> Text -> Text -> Text -> IO ()
 sendSearchSuggestions = sendRequest "GetSearchSuggestions" buildGetSearchSuggestionsRequest Handlers.GetSearchSuggestions.routingKey

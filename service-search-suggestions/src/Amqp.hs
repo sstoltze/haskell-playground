@@ -5,10 +5,26 @@ module Amqp where
 import Configuration.Dotenv (loadFile, defaultConfig)
 import Data.Maybe (fromMaybe)
 import Data.Functor (void)
-import Data.Text
+import Data.Text (Text, pack)
 import System.Environment (lookupEnv)
 
 import Network.AMQP
+
+replyQueueOpts :: Text -> QueueOpts
+replyQueueOpts queue = newQueue { queueName = queue
+                                , queueAutoDelete = True
+                                , queueExclusive = True
+                                }
+
+handlerQueueOpts :: Text -> QueueOpts
+handlerQueueOpts queue = newQueue { queueName = queue
+                                  , queueAutoDelete = True
+                                  }
+
+declareAndBindQueue :: Channel -> QueueOpts -> Text -> IO ()
+declareAndBindQueue channel opts routingKey = do
+  void $ declareQueue channel opts
+  bindQueue channel (queueName opts) (exchangeName directExchange) routingKey
 
 amqpConnectionFromEnv :: IO Connection
 amqpConnectionFromEnv = do
@@ -20,9 +36,9 @@ amqpConnectionFromEnv = do
 
 directExchange :: ExchangeOpts
 directExchange = newExchange { exchangeName = "amq.direct"
-                                   , exchangeType = "direct"
-                                   , exchangeDurable = True
-                                   }
+                             , exchangeType = "direct"
+                             , exchangeDurable = True
+                             }
 
 defaultExchangeName :: Text
 defaultExchangeName = ""

@@ -2,7 +2,7 @@
 module Handlers.GetSearchSuggestions where
 
 import Data.Text
-import qualified Data.ByteString.Lazy.Char8 as BL
+import Data.ByteString.Lazy.Char8 (ByteString)
 
 import Lens.Micro
 import Data.ProtoLens (defMessage, showMessage)
@@ -11,7 +11,7 @@ import qualified Proto.Search_Fields as Search
 
 import Handler
 import Network.AMQP
-import Protobuf (encodeProtobuf, decodeProtobuf)
+import Protobuf (encodeProtobuf, decodeProtobufWithDefault)
 
 buildSearchSuggestionsResponse :: [Text] -> Search.GetSearchSuggestionsResponse
 buildSearchSuggestionsResponse r =
@@ -31,9 +31,9 @@ handler = Handler { handlerRoutingKey = routingKey
                   , handlerHandler = handle
                   }
 
-handle :: Message -> IO BL.ByteString
+handle :: Message -> IO ByteString
 handle m = do
-  let msg = decodeProtobuf (msgBody m) :: Search.GetSearchSuggestionsRequest
+  let msg = decodeProtobufWithDefault (msgBody m) :: Search.GetSearchSuggestionsRequest
   putStrLn "GetSearchResponse handler received:"
   putStrLn $ showMessage msg
   let response = ["test", "af", "haskell"]

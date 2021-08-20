@@ -19,10 +19,13 @@ main = do
   conn <- amqpConnectionFromEnv
   putStrLn "Create channel"
   channel <- createChannel conn
-  putStrLn "Setup handler"
+
   let handlers = [Handlers.GetSearchSuggestions.handler, Handlers.SubmitSearchQuery.handler]
+  putStrLn "Setup handlers"
+
   forM_ handlers $ setupHandlerQueue channel
 
+  putStrLn "Run handlers"
   forM_ handlers $ runHandler channel
 
   void getLine
