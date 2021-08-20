@@ -1,8 +1,9 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Handler where
 
 import Data.Maybe (fromJust)
 import Data.Functor (void)
-import Data.Text (Text)
+import Data.Text (Text, intercalate)
 import Data.ByteString.Lazy.Char8 (ByteString)
 import Network.AMQP
 
@@ -12,14 +13,16 @@ data Handler = Handler { handlerRoutingKey :: Text
                        , handlerHandler :: Message -> IO ByteString
                        }
 
-setupHandlerQueue :: Channel -> Handler -> IO ()
-setupHandlerQueue channel h = do
-  let queue = handlerRoutingKey h
-  declareAndBindQueue channel (handlerQueueOpts queue) queue
+handlerRoutingKeyPrefix :: Text
+handlerRoutingKeyPrefix = "service-search-suggestions"
 
-setupReplyQueue :: Channel -> Text -> IO ()
-setupReplyQueue channel replyTo =
-  declareAndBindQueue channel (replyQueueOpts replyTo) replyTo
+buildRoutingKey :: Text -> Text -> Text
+buildRoutingKey version route =
+  intercalate "." [handlerRoutingKeyPrefix, version, route]
+
+handlerSetupQueue :: Channel -> Handler -> IO ()
+handlerSetupQueue channel handler =
+  setupHandlerQueue channel (handlerRoutingKey handler)
 
 handleMessage :: (Message -> IO ByteString) -> (Message, Envelope) -> IO ()
 handleMessage handler (m, e) = do

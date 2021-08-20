@@ -23,7 +23,7 @@ main = do
   let handlers = [Handlers.GetSearchSuggestions.handler, Handlers.SubmitSearchQuery.handler]
   putStrLn "Setup handlers"
 
-  forM_ handlers $ setupHandlerQueue channel
+  forM_ handlers $ handlerSetupQueue channel
 
   putStrLn "Run handlers"
   forM_ handlers $ runHandler channel

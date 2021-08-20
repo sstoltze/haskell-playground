@@ -26,6 +26,14 @@ declareAndBindQueue channel opts routingKey = do
   void $ declareQueue channel opts
   bindQueue channel (queueName opts) (exchangeName directExchange) routingKey
 
+setupHandlerQueue :: Channel -> Text -> IO ()
+setupHandlerQueue channel queue =
+  declareAndBindQueue channel (handlerQueueOpts queue) queue
+
+setupReplyQueue :: Channel -> Text -> IO ()
+setupReplyQueue channel replyTo =
+  declareAndBindQueue channel (replyQueueOpts replyTo) replyTo
+
 amqpConnectionFromEnv :: IO Connection
 amqpConnectionFromEnv = do
   void (loadFile defaultConfig)
