@@ -13,7 +13,7 @@ import qualified Proto.Search_Fields as Search
 
 import Handler
 import Network.AMQP
-import Proto (encodeProtobuf, decodeProtobuf)
+import Protobuf (encodeProtobuf, decodeProtobuf)
 
 searchQueryResponseSuccess :: Search.SubmitSearchQueryResponse
 searchQueryResponseSuccess =

@@ -43,7 +43,7 @@ executable send-test-requests
       Handler
       Handlers.GetSearchSuggestions
       Handlers.SubmitSearchQuery
-      Proto
+      Protobuf
       Paths_service_search_suggestions
   hs-source-dirs:
       test
@@ -69,7 +69,7 @@ executable service-search-suggestions
       Handler
       Handlers.GetSearchSuggestions
       Handlers.SubmitSearchQuery
-      Proto
+      Protobuf
       Paths_service_search_suggestions
   hs-source-dirs:
       app

@@ -1,4 +1,4 @@
-module Proto where
+module Protobuf where
 
 import Data.Either (fromRight)
 import Data.ByteString.Lazy (fromStrict, toStrict)

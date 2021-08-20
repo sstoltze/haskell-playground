@@ -2,8 +2,6 @@
 module Handlers.GetSearchSuggestions where
 
 import Data.Text
-import Data.Either (fromRight)
-import Data.ByteString.Lazy (fromStrict, toStrict)
 import qualified Data.ByteString.Lazy.Char8 as BL
 
 import Lens.Micro
@@ -13,7 +11,7 @@ import qualified Proto.Search_Fields as Search
 
 import Handler
 import Network.AMQP
-import Proto (encodeProtobuf, decodeProtobuf)
+import Protobuf (encodeProtobuf, decodeProtobuf)
 
 buildSearchSuggestionsResponse :: [Text] -> Search.GetSearchSuggestionsResponse
 buildSearchSuggestionsResponse r =

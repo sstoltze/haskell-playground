@@ -25,14 +25,14 @@ import qualified Proto.Search as Search
 import Amqp
 import Handlers.GetSearchSuggestions (routingKey, buildGetSearchSuggestionsRequest)
 import Handler
-import Proto
+import Protobuf
 import Handlers.SubmitSearchQuery (routingKey, buildSubmitSearchQueryRequest)
 
 randString :: Int -> IO Text
-randString n = liftM (pack . take n . randomRs ('a','z')) newStdGen
+randString n = fmap (pack . take n . randomRs ('a','z')) newStdGen
 
 randRange :: Int -> Int -> IO Int
-randRange a b = liftM (head . randomRs (a, b)) newStdGen
+randRange a b = fmap (head . randomRs (a, b)) newStdGen
 
 receiveResponse :: (Proto.Message m) => String -> (BL.ByteString -> m) -> Channel -> Text -> IO ()
 receiveResponse name decodeMessage channel queue =
@@ -71,13 +71,13 @@ sendAndReceive ::
   -> (Channel -> Text -> Text -> Text -> IO ())
   -> Text
   -> IO ()
-sendAndReceive channel r s q = do
+sendAndReceive channel receiver sender query = do
   replyTo <- randString 10
   correlationId <- randString 10
   setupReplyQueue channel replyTo
 
-  r channel replyTo
-  s channel replyTo correlationId q
+  receiver channel replyTo
+  sender channel replyTo correlationId query
 
 delay :: IO () -> IO ()
 delay f = do
