@@ -1,15 +1,15 @@
 module Main where
 
 import Digraph
-import System.IO (isEOF, getLine)
+import System.IO (isEOF)
 import Data.Maybe (fromMaybe)
 
 main :: IO ()
 main = do
   input <- readInput
   let g = digraphFromAlphabeticalOrder input
-  let cycle = fromMaybe [] $ digraphCycle g
-  putStrLn (digraphDot $ digraphColourPath "red" cycle g)
+  let graphCycle = fromMaybe [] $ digraphCycle g
+  putStrLn (digraphDot $ digraphColourPath "red" graphCycle g)
 
 readInput :: IO [String]
 readInput = readInput' []
