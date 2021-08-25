@@ -2,13 +2,13 @@
 
 module Amqp where
 
-import Configuration.Dotenv (loadFile, defaultConfig)
-import Data.Functor (void)
-import Data.Maybe (fromMaybe)
-import Data.Text (Text, pack)
-import System.Environment (lookupEnv)
+import           Configuration.Dotenv (defaultConfig, loadFile)
+import           Data.Functor         (void)
+import           Data.Maybe           (fromMaybe)
+import           Data.Text            (Text, pack)
+import           System.Environment   (lookupEnv)
 
-import Network.AMQP
+import           Network.AMQP
 
 replyQueueOpts :: Text -> QueueOpts
 replyQueueOpts queue = newQueue { queueName = queue

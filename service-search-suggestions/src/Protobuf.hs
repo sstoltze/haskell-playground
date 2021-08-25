@@ -1,18 +1,19 @@
+{-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE DataKinds #-}
 module Protobuf where
 
-import Data.ByteString.Lazy (fromStrict, toStrict)
-import Data.ByteString.Lazy.Char8 (ByteString)
-import Data.Either (fromRight)
-import Data.ProtoLens (encodeMessage, decodeMessage, defMessage)
-import Data.ProtoLens.Field (HasField)
-import Data.ProtoLens.Message (Message)
-import Data.Text (Text)
+import           Data.ByteString.Lazy       (fromStrict, toStrict)
+import           Data.ByteString.Lazy.Char8 (ByteString)
+import           Data.Either                (fromRight)
+import           Data.ProtoLens             (decodeMessage, defMessage,
+                                             encodeMessage)
+import           Data.ProtoLens.Field       (HasField)
+import           Data.ProtoLens.Message     (Message)
+import           Data.Text                  (Text)
 
-import Lens.Micro
-import qualified Proto.Search as Search
-import qualified Proto.Search_Fields as Search
+import           Lens.Micro
+import qualified Proto.Search               as Search
+import qualified Proto.Search_Fields        as Search
 
 encodeProtobuf :: (Message m) => m -> ByteString
 encodeProtobuf = fromStrict . encodeMessage

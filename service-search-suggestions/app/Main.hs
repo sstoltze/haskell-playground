@@ -2,16 +2,18 @@
 
 module Main where
 
-import Control.Monad (forM_)
-import Data.Functor (void)
+import           Control.Concurrent            (forkIO)
+import           Control.Monad                 (forM_, forever)
+import           Data.Functor                  (void)
 
--- https://hackage.haskell.org/package/amqp-0.22.0/docs/Network-AMQP.html
-import Network.AMQP
+import           Network.AMQP
 
-import Amqp
-import Handler
-import Handlers.GetSearchSuggestions (handler)
-import Handlers.SubmitSearchQuery (handler)
+import           Amqp
+import           Handler
+import           Handlers.GetSearchSuggestions (handler)
+import           Handlers.SubmitSearchQuery    (handler)
+
+
 
 main :: IO ()
 main = do

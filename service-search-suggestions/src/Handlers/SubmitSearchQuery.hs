@@ -2,18 +2,19 @@
 
 module Handlers.SubmitSearchQuery where
 
-import Data.ByteString.Lazy.Char8 (ByteString)
-import Data.Text (Text, pack)
+import           Data.ByteString.Lazy.Char8 (ByteString)
+import           Data.Text                  (Text, pack)
 
-import Data.ProtoLens (defMessage, showMessage)
-import Lens.Micro
-import qualified Proto.Search as Search
-import qualified Proto.Search_Fields as Search
+import           Data.ProtoLens             (defMessage, showMessage)
+import           Lens.Micro
+import qualified Proto.Search               as Search
+import qualified Proto.Search_Fields        as Search
 
-import Network.AMQP
+import           Network.AMQP
 
-import Handler
-import Protobuf
+import           Elasticsearch
+import           Handler
+import           Protobuf
 
 buildSubmitSearchQueryResponse :: Search.SubmitSearchQueryResponse
 buildSubmitSearchQueryResponse =

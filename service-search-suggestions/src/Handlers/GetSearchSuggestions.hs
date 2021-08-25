@@ -1,19 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Handlers.GetSearchSuggestions where
 
-import Data.ByteString.Lazy.Char8 (ByteString)
-import Data.Text (Text, pack)
-import GHC.Word (Word32)
+import           Data.ByteString.Lazy.Char8 (ByteString)
+import           Data.Text                  (Text, pack)
+import           GHC.Word                   (Word32)
 
-import Data.ProtoLens (defMessage, showMessage)
-import Lens.Micro
-import qualified Proto.Search as Search
-import qualified Proto.Search_Fields as Search
+import           Data.ProtoLens             (defMessage, showMessage)
+import           Lens.Micro
+import qualified Proto.Search               as Search
+import qualified Proto.Search_Fields        as Search
 
-import Network.AMQP
+import           Network.AMQP
 
-import Handler
-import Protobuf
+import           Elasticsearch
+import           Handler
+import           Protobuf
 
 buildGetSearchSuggestionsResponse :: [Text] -> Search.GetSearchSuggestionsResponse
 buildGetSearchSuggestionsResponse r =

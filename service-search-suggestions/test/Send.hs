@@ -2,30 +2,30 @@
 
 module Main where
 
-import Control.Concurrent (forkIO, threadDelay)
-import Control.Monad (liftM, forM_)
-import Data.ByteString.Lazy (toStrict)
-import Data.ByteString.Lazy.Char8 (ByteString)
-import Data.Either (fromRight)
-import Data.Functor (void)
-import Data.Maybe (fromJust)
-import Data.Text hiding (head, take)
+import           Control.Concurrent            (forkIO, threadDelay)
+import           Control.Monad                 (forM_, liftM)
+import           Data.ByteString.Lazy          (toStrict)
+import           Data.ByteString.Lazy.Char8    (ByteString)
+import           Data.Either                   (fromRight)
+import           Data.Functor                  (void)
+import           Data.Maybe                    (fromJust)
+import           Data.Text                     hiding (head, take)
 
-import System.Random
+import           System.Random
 
 -- https://hackage.haskell.org/package/amqp-0.22.0/docs/Network-AMQP.html
-import Network.AMQP
+import           Network.AMQP
 
-import Data.ProtoLens (showMessage, decodeMessage)
-import qualified Data.ProtoLens.Message as Proto (Message)
+import           Data.ProtoLens                (decodeMessage, showMessage)
+import qualified Data.ProtoLens.Message        as Proto (Message)
 
-import qualified Proto.Search as Search
+import qualified Proto.Search                  as Search
 
-import Amqp
-import Handler
-import Handlers.GetSearchSuggestions
-import Handlers.SubmitSearchQuery
-import Protobuf
+import           Amqp
+import           Handler
+import           Handlers.GetSearchSuggestions
+import           Handlers.SubmitSearchQuery
+import           Protobuf
 
 randString :: Int -> IO Text
 randString n = fmap (pack . take n . randomRs ('a','z')) newStdGen

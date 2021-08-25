@@ -1,16 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Handler where
 
-import Data.Maybe (fromJust)
-import Data.Functor (void)
-import Data.Text (Text, intercalate)
-import Data.ByteString.Lazy.Char8 (ByteString)
-import Network.AMQP
+import           Control.Concurrent         (forkIO)
+import           Control.Monad              (forever)
+import           Data.ByteString.Lazy.Char8 (ByteString)
+import           Data.Functor               (void)
+import           Data.Maybe                 (fromJust)
+import           Data.Text                  (Text, intercalate)
+import           Network.AMQP
 
-import Amqp
+import           Amqp
 
 data Handler = Handler { handlerRoutingKey :: Text
-                       , handlerHandler :: Message -> IO ByteString
+                       , handlerHandler    :: Message -> IO ByteString
                        }
 
 handlerRoutingKeyPrefix :: Text
