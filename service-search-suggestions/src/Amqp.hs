@@ -19,6 +19,7 @@ replyQueueOpts queue = newQueue { queueName = queue
 handlerQueueOpts :: Text -> QueueOpts
 handlerQueueOpts queue = newQueue { queueName = queue
                                   , queueAutoDelete = True
+                                  , queueDurable = False
                                   }
 
 declareAndBindQueue :: Channel -> QueueOpts -> Text -> IO ()

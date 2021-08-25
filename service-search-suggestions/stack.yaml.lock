@@ -3,11 +3,45 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: proto-lens-0.7.0.0@sha256:2c44a62375f7712f9381f84b1d30cee2f94384f1c98801db2f4450359a8e5036,3036
+    pantry-tree:
+      size: 1857
+      sha256: b8e95cae7459e6a601abe32df92c5b24685765f4dd402fd84d8fd1e5b04892d2
+  original:
+    hackage: proto-lens-0.7.0.0
+- completed:
+    hackage: proto-lens-protoc-0.7.0.0@sha256:04e57ec59ce21dc781b9debe063f03d85a7ec2ad1ee5c2deb1c30282119e9119,2304
+    pantry-tree:
+      size: 1219
+      sha256: 990ccd28c9fda706123c50032d83adbf1ba3bdc914f206d8587ddb6d49d4686e
+  original:
+    hackage: proto-lens-protoc-0.7.0.0
+- completed:
+    hackage: proto-lens-runtime-0.7.0.0@sha256:d6cfab159a63f5c42a1a507638c674a714dfa5f69a06f559e8da840eaafde3ab,3115
+    pantry-tree:
+      size: 168
+      sha256: 25214e3dfa3d36b453da5be39f392699ac78ada5ded8a1384668e3e3cd9234e4
+  original:
+    hackage: proto-lens-runtime-0.7.0.0
+- completed:
+    hackage: proto-lens-setup-0.4.0.4@sha256:c44d1b6d68a8faf1d2f9c7ca492ce3c9c2ee66d255452c683f762f10c9ebe430,3185
+    pantry-tree:
+      size: 235
+      sha256: 3e7d12c20ebfa4d261254278331d2a708e49278f763183da2f680a4b668e881f
+  original:
+    hackage: proto-lens-setup-0.4.0.4
+- completed:
+    hackage: profunctors-5.5.2@sha256:0d824ae4b7cdde33ec4c677ded9e373e057c3a8e2c6b0532c183f9413db6e32c,2176
+    pantry-tree:
+      size: 1639
+      sha256: 6c904ead0a6d963c6ac6222f9317571197e37bcef7b4471eea7f5763bdc33bce
+  original:
+    hackage: profunctors-5.5.2
 snapshots:
 - completed:
-    size: 567679
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/15.yaml
-    sha256: 72e87841a0ab5b72f6f018e8ee692fd972b7bb32a944990f028e10d6eb528e63
-  original:
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/15.yaml
+    size: 587113
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/7.yaml
+    sha256: c8617e042150e4bf412d011c234aba6189f789d0cd2bd4f1a1a9ca9a0ef5d042
+  original: lts-18.7

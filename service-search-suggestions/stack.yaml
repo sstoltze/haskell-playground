@@ -17,8 +17,8 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver:
-  url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/17/15.yaml
+resolver: lts-18.7 # nightly-2018-05-09
+# resolver: lts-12.26 # Needed for 'bloodhound' - causes a bunch of issues
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -40,7 +40,20 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-# extra-deps: []
+extra-deps:
+- proto-lens-0.7.0.0
+- proto-lens-protoc-0.7.0.0
+- proto-lens-runtime-0.7.0.0
+- proto-lens-setup-0.4.0.4
+- profunctors-5.5.2
+# - ghc-source-gen-0.4.2.0
+# With lts-12.26
+# - bloodhound-0.16.0.0
+# - proto-lens-0.4.0.1
+# - proto-lens-protoc-0.4.0.2
+# - lens-labels-0.3.0.1
+
+
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

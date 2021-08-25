@@ -9,6 +9,18 @@ maintainer:          sstoltze@gmail.com
 copyright:           2021 Sarah Stoltze
 category:            Web
 
+dependencies:
+  - base
+  - microlens
+  - proto-lens
+  - text
+  # https://hackage.haskell.org/package/amqp-0.22.0/docs/Network-AMQP.html
+  - amqp
+  - dotenv
+  - bytestring
+  - req
+  - aeson
+
 custom-setup:
   dependencies:
     - base
@@ -35,14 +47,7 @@ executables:
       - app
       - src
     dependencies:
-      - base
       - service-search-suggestions
-      - microlens
-      - proto-lens
-      - text
-      - amqp
-      - dotenv
-      - bytestring
 
   send-test-requests:
     main: Send.hs
@@ -50,12 +55,5 @@ executables:
       - test
       - src
     dependencies:
-      - base
       - service-search-suggestions
-      - microlens
-      - proto-lens
-      - text
-      - amqp
-      - dotenv
-      - bytestring
       - random

@@ -23,13 +23,10 @@ main = do
   channel <- createChannel conn
 
   let handlers = [Handlers.GetSearchSuggestions.handler, Handlers.SubmitSearchQuery.handler]
-  putStrLn "Setup handlers"
-
-  forM_ handlers $ handlerSetupQueue channel
 
   putStrLn "Run handlers"
-  forM_ handlers $ runHandler channel
+  forM_ handlers $ setupAndRunHandler channel
 
-  void getLine
+  forever getLine
 
   closeConnection conn

@@ -41,8 +41,13 @@ handle m = do
   let msg = decodeProtobuf (msgBody m) :: Either String Search.GetSearchSuggestionsRequest
   putStrLn "GetSearchResponse handler received:"
   putStrLn $ either ("Error: " ++) showMessage msg
-  let response = \req -> (req ^. Search.query) : ["test", "af", "haskell"]
-  let resp = either (buildInvalidRequestError . pack) (buildGetSearchSuggestionsResponse . response) msg
+  esIndex <- elasticsearchIndexFromEnv
+  let buildResponse = \req -> do
+        let query = req ^. Search.query
+        suggestions <- elasticsearchGetSuggestions esIndex query
+        let hits = elasticsearchHitQuery <$> elasticsearchResponseHits suggestions
+        return $ buildGetSearchSuggestionsResponse hits
+  resp <- either (return . buildInvalidRequestError . pack) buildResponse msg
   return $ encodeProtobuf resp
 
 handler :: Handler

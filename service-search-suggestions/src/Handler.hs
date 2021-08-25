@@ -43,3 +43,8 @@ runHandler channel h = do
   let handler = handleMessage (handlerHandler h)
   let queue = handlerRoutingKey h
   void $ consumeMsgs channel queue Ack handler
+
+setupAndRunHandler :: Channel -> Handler -> IO ()
+setupAndRunHandler channel handler = do
+  handlerSetupQueue channel handler
+  runHandler channel handler

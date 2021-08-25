@@ -37,7 +37,12 @@ handle m = do
   let msg = decodeProtobuf (msgBody m) :: Either String Search.SubmitSearchQueryRequest
   putStrLn "SubmitSearchQuery handler received:"
   putStrLn $ either ("Error: " ++) showMessage msg
-  let resp = either (buildInvalidRequestError . pack) (const buildSubmitSearchQueryResponse) msg
+  esIndex <- elasticsearchIndexFromEnv
+  let buildResponse = \req -> do
+        let query = req ^. Search.query
+        elasticsearchSubmitQuery esIndex query
+        return buildSubmitSearchQueryResponse
+  resp <- either (return . buildInvalidRequestError . pack) buildResponse msg
   return $ encodeProtobuf resp
 
 handler :: Handler
