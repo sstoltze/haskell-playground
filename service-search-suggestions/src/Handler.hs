@@ -1,5 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Handler where
+module Handler (Handler(..),
+                HandlerIO,
+                HandlerContext(..),
+                setupAndRunHandler,
+                buildRoutingKey) where
 
 import           Control.Monad.Reader
 import           Data.ByteString.Lazy.Char8 (ByteString)

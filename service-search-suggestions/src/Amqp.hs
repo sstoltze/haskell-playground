@@ -1,6 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Amqp where
+module Amqp (amqpConnectionFromEnv,
+             createChannel,
+             defaultExchangeName,
+             directExchange,
+             setupHandlerQueue,
+             setupReplyQueue) where
 
 import           Configuration.Dotenv (defaultConfig, loadFile)
 import           Data.Functor         (void)

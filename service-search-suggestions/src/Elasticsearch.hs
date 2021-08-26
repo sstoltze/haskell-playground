@@ -1,6 +1,9 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Elasticsearch where
+module Elasticsearch (ElasticsearchIndex,
+                      elasticsearchIndexFromEnv,
+                      elasticsearchGetSuggestions,
+                      elasticsearchSubmitQuery) where
 
 import           Configuration.Dotenv (defaultConfig, loadFile)
 import           Data.Aeson
@@ -17,17 +20,13 @@ data ElasticsearchIndex = ElasticsearchIndex { elasticsearchHost      :: Text
   deriving (Show)
 
 newtype ElasticsearchResponse = ElasticsearchResponse { elasticsearchResponseHits :: [ElasticsearchHits] }
-  deriving (Show)
 
-data ElasticsearchHits = ElasticsearchHits { elasticsearchHitQuery :: Text
-                                           , elasticsearchHitScore :: Double
-                                           }
-  deriving (Show)
+
+newtype ElasticsearchHits = ElasticsearchHits { elasticsearchHitQuery :: Text }
 
 instance FromJSON ElasticsearchHits where
   parseJSON = withObject "ElasticsearchHits" $ \h -> ElasticsearchHits
     <$> either parseFail (.: "query") (parseEither (.: "_source") h)
-    <*> (h .: "_score")
 
 instance FromJSON ElasticsearchResponse where
   parseJSON = withObject "ElasticsearchResponse" $ \r -> fmap ElasticsearchResponse (either parseFail (.: "hits") (parseEither (.: "hits") r))
@@ -51,11 +50,13 @@ elasticsearchGetSuggestionsUrl esIndex = https (elasticsearchHost esIndex) /: el
 elasticsearchSubmitQueryUrl :: ElasticsearchIndex -> Text -> Url 'Https
 elasticsearchSubmitQueryUrl esIndex q = https (elasticsearchHost esIndex) /: elasticsearchIndexName esIndex /: "_doc" /: q
 
-elasticsearchGetSuggestions :: ElasticsearchIndex -> Text -> IO ElasticsearchResponse
+elasticsearchGetSuggestions :: ElasticsearchIndex -> Text -> IO [Text]
 elasticsearchGetSuggestions esIndex query = runReq defaultHttpConfig $ do
   let payload = elasticsearchGetSuggestionsPayload query
   r <- req POST (elasticsearchGetSuggestionsUrl esIndex) (ReqBodyJson payload) jsonResponse mempty
-  return (responseBody r :: ElasticsearchResponse)
+  let body = responseBody r :: ElasticsearchResponse
+  let suggestions = elasticsearchHitQuery <$> elasticsearchResponseHits body
+  return suggestions
 
 elasticsearchSubmitQuery :: ElasticsearchIndex -> Text -> IO ()
 elasticsearchSubmitQuery esIndex query = runReq defaultHttpConfig $ do

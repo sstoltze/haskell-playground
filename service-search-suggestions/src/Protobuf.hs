@@ -1,6 +1,10 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-module Protobuf where
+module Protobuf (encodeProtobuf,
+                 decodeProtobuf,
+                 decodeProtobufWithDefault,
+                 buildInternalError,
+                 buildInvalidRequestError) where
 
 import           Data.ByteString.Lazy       (fromStrict, toStrict)
 import           Data.ByteString.Lazy.Char8 (ByteString)

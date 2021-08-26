@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Handlers.SubmitSearchQuery where
+module Handlers.SubmitSearchQuery (handler,
+                                   buildSubmitSearchQueryRequest,
+                                   buildSubmitSearchQueryResponse) where
 
 import           Control.Monad.Reader
 import           Data.ByteString.Lazy.Char8 (ByteString)
@@ -35,11 +37,6 @@ routingKey = buildRoutingKey "v1" "submit-search-query"
 
 unsafePrefixes :: [T.Text]
 unsafePrefixes = ["ero", "fuck", "gay", "naked", "nude", "penis", "porn", "pussy", "sex", "xx"]
-
--- Don't use unsafePerformIO >:(
--- Seems safe and more performant here since we don't change the file during runtime and just need to read it once
-unsafeWords :: [T.Text]
-unsafeWords = filter (not . T.null) . T.lines $ unsafeDupablePerformIO $ T.IO.readFile "./src/Handlers/unsafe_words.txt"
 
 isSafeQuery :: [T.Text] -> T.Text -> Bool
 isSafeQuery unsafe q = all isSafeSentence subQueries

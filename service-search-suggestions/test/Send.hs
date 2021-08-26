@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main where
+module Main (main) where
 
 import           Control.Concurrent            (forkIO, threadDelay)
 import           Control.Monad                 (forM_, liftM)
@@ -23,8 +23,8 @@ import qualified Proto.Search                  as Search
 
 import           Amqp
 import           Handler
-import           Handlers.GetSearchSuggestions
-import           Handlers.SubmitSearchQuery
+import           Handlers.GetSearchSuggestions as GetSuggestions
+import           Handlers.SubmitSearchQuery    as SubmitQuery
 import           Protobuf
 
 randString :: Int -> IO Text
@@ -62,12 +62,12 @@ receiveSubmitQuery =
   receiveResponse "SubmitSearchQuery" (decodeProtobufWithDefault :: ByteString -> Search.SubmitSearchQueryResponse)
 
 sendSearchSuggestions :: Channel -> Text -> Text -> Text -> IO ()
-sendSearchSuggestions = sendRequest "GetSearchSuggestions" buildReq Handlers.GetSearchSuggestions.routingKey
+sendSearchSuggestions = sendRequest "GetSearchSuggestions" buildReq (handlerRoutingKey GetSuggestions.handler)
   where
     buildReq q = buildGetSearchSuggestionsRequest q 10 True
 
 sendSubmitQuery :: Channel -> Text -> Text -> Text -> IO ()
-sendSubmitQuery = sendRequest "SubmitSearchQuery" buildSubmitSearchQueryRequest Handlers.SubmitSearchQuery.routingKey
+sendSubmitQuery = sendRequest "SubmitSearchQuery" buildSubmitSearchQueryRequest (handlerRoutingKey SubmitQuery.handler)
 
 sendAndReceive ::
   Channel

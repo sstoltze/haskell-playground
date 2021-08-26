@@ -1,15 +1,13 @@
-{-# LANGUAGE OverloadedStrings #-}
-
-module Main where
+module Main (main) where
 
 import           Control.Concurrent            (forkIO)
 import           Control.Monad                 (forM_, forever)
 import           Data.Functor                  (void)
+import           Network.AMQP                  (closeConnection)
 
-import           Network.AMQP
-
-import           Amqp
-import           Handler
+import           Amqp                          (amqpConnectionFromEnv,
+                                                createChannel)
+import           Handler                       (setupAndRunHandler)
 import           Handlers.GetSearchSuggestions (handler)
 import           Handlers.SubmitSearchQuery    (handler)
 

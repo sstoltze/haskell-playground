@@ -46,14 +46,6 @@ extra-deps:
 - proto-lens-runtime-0.7.0.0
 - proto-lens-setup-0.4.0.4
 - profunctors-5.5.2
-# - ghc-source-gen-0.4.2.0
-# With lts-12.26
-# - bloodhound-0.16.0.0
-# - proto-lens-0.4.0.1
-# - proto-lens-protoc-0.4.0.2
-# - lens-labels-0.3.0.1
-
-
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

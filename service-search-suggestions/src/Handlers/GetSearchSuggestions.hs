@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Handlers.GetSearchSuggestions where
+module Handlers.GetSearchSuggestions (handler,
+                                      buildGetSearchSuggestionsRequest,
+                                      buildGetSearchSuggestionsResponse) where
 
 import           Control.Monad.Reader
 import           Data.ByteString.Lazy.Char8 (ByteString)
@@ -44,8 +46,7 @@ handle m = do
   let buildResponse = \req -> do
         let query = req ^. Search.query
         suggestions <- elasticsearchGetSuggestions (contextElasticsearchIndex context) query
-        let hits = elasticsearchHitQuery <$> elasticsearchResponseHits suggestions
-        return $ buildGetSearchSuggestionsResponse hits
+        return $ buildGetSearchSuggestionsResponse suggestions
   resp <- liftIO $ either (return . buildInvalidRequestError . pack) buildResponse msg
   return $ encodeProtobuf resp
 
