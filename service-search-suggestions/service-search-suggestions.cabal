@@ -38,6 +38,7 @@ library
     , bytestring
     , dotenv
     , microlens
+    , mtl
     , proto-lens
     , proto-lens-runtime
     , req
@@ -66,6 +67,7 @@ executable send-test-requests
     , bytestring
     , dotenv
     , microlens
+    , mtl
     , proto-lens
     , random
     , req
@@ -95,6 +97,7 @@ executable service-search-suggestions
     , bytestring
     , dotenv
     , microlens
+    , mtl
     , proto-lens
     , req
     , service-search-suggestions

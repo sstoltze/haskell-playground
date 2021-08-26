@@ -6,9 +6,8 @@ import           Configuration.Dotenv (defaultConfig, loadFile)
 import           Data.Functor         (void)
 import           Data.Maybe           (fromMaybe)
 import           Data.Text            (Text, pack)
-import           System.Environment   (lookupEnv)
-
 import           Network.AMQP
+import           System.Environment   (lookupEnv)
 
 replyQueueOpts :: Text -> QueueOpts
 replyQueueOpts queue = newQueue { queueName = queue

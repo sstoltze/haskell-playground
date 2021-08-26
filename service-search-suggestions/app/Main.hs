@@ -13,8 +13,6 @@ import           Handler
 import           Handlers.GetSearchSuggestions (handler)
 import           Handlers.SubmitSearchQuery    (handler)
 
-
-
 main :: IO ()
 main = do
   putStrLn "Create connection"

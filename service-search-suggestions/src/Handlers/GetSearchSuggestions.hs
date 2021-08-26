@@ -1,16 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Handlers.GetSearchSuggestions where
 
+import           Control.Monad.Reader
 import           Data.ByteString.Lazy.Char8 (ByteString)
+import           Data.ProtoLens             (defMessage, showMessage)
 import           Data.Text                  (Text, pack)
 import           GHC.Word                   (Word32)
-
-import           Data.ProtoLens             (defMessage, showMessage)
 import           Lens.Micro
+import           Network.AMQP
 import qualified Proto.Search               as Search
 import qualified Proto.Search_Fields        as Search
-
-import           Network.AMQP
 
 import           Elasticsearch
 import           Handler
@@ -36,18 +35,18 @@ buildGetSearchSuggestionsRequest query limit isSafe =
 routingKey :: Text
 routingKey = buildRoutingKey "v1" "get-search-suggestions"
 
-handle :: Message -> IO ByteString
+handle :: Message -> HandlerIO ByteString
 handle m = do
+  context <- ask
   let msg = decodeProtobuf (msgBody m) :: Either String Search.GetSearchSuggestionsRequest
-  putStrLn "GetSearchResponse handler received:"
-  putStrLn $ either ("Error: " ++) showMessage msg
-  esIndex <- elasticsearchIndexFromEnv
+  liftIO $ putStrLn "GetSearchResponse handler received:"
+  liftIO $ putStrLn $ either ("Error: " ++) showMessage msg
   let buildResponse = \req -> do
         let query = req ^. Search.query
-        suggestions <- elasticsearchGetSuggestions esIndex query
+        suggestions <- elasticsearchGetSuggestions (contextElasticsearchIndex context) query
         let hits = elasticsearchHitQuery <$> elasticsearchResponseHits suggestions
         return $ buildGetSearchSuggestionsResponse hits
-  resp <- either (return . buildInvalidRequestError . pack) buildResponse msg
+  resp <- liftIO $ either (return . buildInvalidRequestError . pack) buildResponse msg
   return $ encodeProtobuf resp
 
 handler :: Handler

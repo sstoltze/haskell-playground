@@ -57,8 +57,8 @@ receiveSearchSuggestions :: Channel -> Text -> IO ()
 receiveSearchSuggestions =
   receiveResponse "GetSearchSuggestions" (decodeProtobufWithDefault :: ByteString -> Search.GetSearchSuggestionsResponse)
 
-receiveSearchQuery :: Channel -> Text -> IO ()
-receiveSearchQuery =
+receiveSubmitQuery :: Channel -> Text -> IO ()
+receiveSubmitQuery =
   receiveResponse "SubmitSearchQuery" (decodeProtobufWithDefault :: ByteString -> Search.SubmitSearchQueryResponse)
 
 sendSearchSuggestions :: Channel -> Text -> Text -> Text -> IO ()
@@ -66,8 +66,8 @@ sendSearchSuggestions = sendRequest "GetSearchSuggestions" buildReq Handlers.Get
   where
     buildReq q = buildGetSearchSuggestionsRequest q 10 True
 
-sendSearchQuery :: Channel -> Text -> Text -> Text -> IO ()
-sendSearchQuery = sendRequest "SubmitSearchQuery" buildSubmitSearchQueryRequest Handlers.SubmitSearchQuery.routingKey
+sendSubmitQuery :: Channel -> Text -> Text -> Text -> IO ()
+sendSubmitQuery = sendRequest "SubmitSearchQuery" buildSubmitSearchQueryRequest Handlers.SubmitSearchQuery.routingKey
 
 sendAndReceive ::
   Channel
@@ -94,10 +94,14 @@ main = do
   putStrLn "Sending test requests"
   conn <- amqpConnectionFromEnv
   channel <- createChannel conn
+  sendAndReceive channel receiveSearchSuggestions sendSearchSuggestions "sexy"
+  sendAndReceive channel receiveSubmitQuery sendSubmitQuery "sexy"
 
   forM_ [1..25] $ \i -> do
     forkIO $ delay $ sendAndReceive channel receiveSearchSuggestions sendSearchSuggestions (pack $ show i)
-    forkIO $ delay $ sendAndReceive channel receiveSearchQuery sendSearchQuery (pack $ show i)
+    forkIO $ delay $ sendAndReceive channel receiveSubmitQuery sendSubmitQuery (pack $ show i ++ " test " ++ show (i+1))
+
+
 
   void getLine
 
