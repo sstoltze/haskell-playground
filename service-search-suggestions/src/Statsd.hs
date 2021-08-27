@@ -3,6 +3,7 @@
 module Statsd (HandlerCounter(..),
                statsdClient,
                setupStatsdStore,
+               statsdStoreFromEnv,
                createHandlerCounter,
                statsdHandlerRequest,
                statsdHandlerSuccess,
@@ -10,7 +11,8 @@ module Statsd (HandlerCounter(..),
 
 import           Control.Monad.IO.Class
 import           Control.Monad.Reader
-import           Data.Text                       (Text)
+import qualified Data.Text                       as T
+import           System.Environment              (lookupEnv)
 import           System.Metrics
 import qualified System.Metrics.Counter          as Counter
 import           System.Remote.Monitoring.Statsd
@@ -18,22 +20,7 @@ import           System.Remote.Monitoring.Statsd
 import           Types.Handler
 import           Types.Statsd
 
-statsdHandlerRequest :: HandlerIO ()
-statsdHandlerRequest = do
-  context <- ask
-  counterRequest $ contextCounter context
-
-statsdHandlerSuccess :: HandlerIO ()
-statsdHandlerSuccess = do
-  context <- ask
-  counterSuccess $ contextCounter context
-
-statsdHandlerFailure :: HandlerIO ()
-statsdHandlerFailure = do
-  context <- ask
-  counterFailure $ contextCounter context
-
-statsdClient :: Text -> Text -> StatsdOptions
+statsdClient :: T.Text -> T.Text -> StatsdOptions
 statsdClient sdHost sdPrefix = defaultStatsdOptions { host = sdHost
                                                     , prefix = sdPrefix
                                                     }
@@ -44,7 +31,13 @@ setupStatsdStore opts = do
   _ <- forkStatsd opts store
   return store
 
-createHandlerCounter :: Store -> Text -> IO HandlerCounter
+statsdStoreFromEnv :: IO Store
+statsdStoreFromEnv = do
+  sdHost <- maybe "" T.pack <$> lookupEnv "STATSD_HOST"
+  sdPrefix <- maybe "" T.pack <$> lookupEnv "STATSD_PREFIX"
+  setupStatsdStore $ statsdClient sdHost sdPrefix
+
+createHandlerCounter :: Store -> T.Text -> IO HandlerCounter
 createHandlerCounter store routingKey = do
   reqCounter <- createCounter (routingKey <> ".count") store
   sucCounter <- createCounter (routingKey <> ".success") store
@@ -62,3 +55,18 @@ counterSuccess = liftIO . Counter.inc . successCounter
 
 counterFailure :: (MonadIO m) => HandlerCounter -> m ()
 counterFailure = liftIO . Counter.inc . failureCounter
+
+statsdHandlerRequest :: HandlerIO ()
+statsdHandlerRequest = do
+  context <- ask
+  counterRequest $ contextCounter context
+
+statsdHandlerSuccess :: HandlerIO ()
+statsdHandlerSuccess = do
+  context <- ask
+  counterSuccess $ contextCounter context
+
+statsdHandlerFailure :: HandlerIO ()
+statsdHandlerFailure = do
+  context <- ask
+  counterFailure $ contextCounter context

@@ -1,34 +1,27 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Main (main) where
 
-import           Control.Concurrent              (forkIO)
-import           Control.Monad                   (forM_, forever)
-import           Data.Functor                    (void)
-import           Network.AMQP                    (closeConnection)
-import           System.Metrics
-import           System.Remote.Monitoring.Statsd
+import           Control.Monad                 (forM_, forever)
+import           Network.AMQP                  (closeConnection)
 
-import           Amqp                            (amqpConnectionFromEnv,
-                                                  createChannel)
-import           Handler                         (setupAndRunHandler)
-import           Handlers.GetSearchSuggestions   (handler)
-import           Handlers.SubmitSearchQuery      (handler)
-import           Statsd
-
+import           Amqp                          (amqpConnectionFromEnv,
+                                                createChannel)
+import           Handler                       (setupAndRunHandler)
+import qualified Handlers.GetSearchSuggestions as GetSuggestions (handler)
+import qualified Handlers.SubmitSearchQuery    as SubmitQuery (handler)
+import           Statsd                        (statsdStoreFromEnv)
 
 main :: IO ()
 main = do
-  let statsdClient = defaultStatsdOptions { host = "statsd.tissuu.com"
-                                          , prefix = "sst.haskell-app"
-                                          }
-  store <- setupStatsdStore statsdClient
+  store <- statsdStoreFromEnv
 
   putStrLn "Create connection"
   conn <- amqpConnectionFromEnv
   putStrLn "Create channel"
   channel <- createChannel conn
 
-  let handlers = [Handlers.GetSearchSuggestions.handler, Handlers.SubmitSearchQuery.handler]
+  let handlers = [GetSuggestions.handler, SubmitQuery.handler]
 
   putStrLn "Run handlers"
   forM_ handlers $ setupAndRunHandler channel store
