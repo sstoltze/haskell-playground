@@ -37,6 +37,8 @@ library
     , base
     , bytestring
     , dotenv
+    , ekg-core
+    , ekg-statsd
     , microlens
     , mtl
     , proto-lens
@@ -49,11 +51,16 @@ executable send-test-requests
   main-is: Send.hs
   other-modules:
       Amqp
+      Config
       Elasticsearch
       Handler
       Handlers.GetSearchSuggestions
       Handlers.SubmitSearchQuery
       Protobuf
+      Statsd
+      Types.Elasticsearch
+      Types.Handler
+      Types.Statsd
       Paths_service_search_suggestions
   hs-source-dirs:
       test
@@ -66,6 +73,8 @@ executable send-test-requests
     , base
     , bytestring
     , dotenv
+    , ekg-core
+    , ekg-statsd
     , microlens
     , mtl
     , proto-lens
@@ -79,11 +88,16 @@ executable service-search-suggestions
   main-is: Main.hs
   other-modules:
       Amqp
+      Config
       Elasticsearch
       Handler
       Handlers.GetSearchSuggestions
       Handlers.SubmitSearchQuery
       Protobuf
+      Statsd
+      Types.Elasticsearch
+      Types.Handler
+      Types.Statsd
       Paths_service_search_suggestions
   hs-source-dirs:
       app
@@ -96,6 +110,8 @@ executable service-search-suggestions
     , base
     , bytestring
     , dotenv
+    , ekg-core
+    , ekg-statsd
     , microlens
     , mtl
     , proto-lens

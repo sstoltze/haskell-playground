@@ -1,36 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Handlers.SubmitSearchQuery (handler,
-                                   buildSubmitSearchQueryRequest,
-                                   buildSubmitSearchQueryResponse) where
+module Handlers.SubmitSearchQuery (handler) where
 
 import           Control.Monad.Reader
 import           Data.ByteString.Lazy.Char8 (ByteString)
-import           Data.ProtoLens             (defMessage, showMessage)
+import           Data.ProtoLens             (showMessage)
 import qualified Data.Text                  as T
-import qualified Data.Text.IO               as T.IO
 import           Lens.Micro
 import           Network.AMQP
 import qualified Proto.Search               as Search
 import qualified Proto.Search_Fields        as Search
-import           System.IO.Unsafe           (unsafeDupablePerformIO)
 
 import           Elasticsearch
 import           Handler
 import           Protobuf
-
-buildSubmitSearchQueryResponse :: Search.SubmitSearchQueryResponse
-buildSubmitSearchQueryResponse =
-  defMessage
-  & (Search.maybe'success ?~ success)
-  where
-    success :: Search.SubmitSearchQueryResponse'Success
-    success = defMessage
-
-buildSubmitSearchQueryRequest :: T.Text -> Search.SubmitSearchQueryRequest
-buildSubmitSearchQueryRequest query =
-  defMessage
-  & Search.query .~ query
+import           Statsd
 
 routingKey :: T.Text
 routingKey = buildRoutingKey "v1" "submit-search-query"
@@ -54,17 +38,25 @@ isSafeQuery unsafe q = all isSafeSentence subQueries
 
 handle :: Message -> HandlerIO ByteString
 handle m = do
-  context <- ask
   let msg = decodeProtobuf (msgBody m) :: Either String Search.SubmitSearchQueryRequest
   liftIO $ putStrLn "SubmitSearchQuery handler received:"
   liftIO $ putStrLn $ either ("Error: " ++) showMessage msg
-  let buildResponse = \req -> do
-        let query = req ^. Search.query
-        when (isSafeQuery (contextUnsafeWords context) query) $
-          elasticsearchSubmitQuery (contextElasticsearchIndex context) query
-        return buildSubmitSearchQueryResponse
-  resp <- liftIO $ either (return . buildInvalidRequestError . T.pack) buildResponse msg
+  resp <- either handleInvalidRequest handleResponse msg
   return $ encodeProtobuf resp
+
+handleInvalidRequest :: String -> HandlerIO Search.SubmitSearchQueryResponse
+handleInvalidRequest s = do
+  statsdHandlerFailure
+  return $ buildInvalidRequestError $ T.pack s
+
+handleResponse :: Search.SubmitSearchQueryRequest -> HandlerIO Search.SubmitSearchQueryResponse
+handleResponse req = do
+  context <- ask
+  let query = req ^. Search.query
+  when (isSafeQuery (contextUnsafeWords context) query) $
+    liftIO $ elasticsearchSubmitQuery (contextElasticsearchIndex context) query
+  statsdHandlerSuccess
+  return buildSubmitSearchQueryResponse
 
 handler :: Handler
 handler = Handler { handlerRoutingKey = routingKey

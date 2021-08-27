@@ -21,6 +21,8 @@ dependencies:
   - req
   - aeson
   - mtl
+  - ekg-core
+  - ekg-statsd
 
 custom-setup:
   dependencies:

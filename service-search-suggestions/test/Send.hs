@@ -9,17 +9,12 @@ import           Data.ByteString.Lazy.Char8    (ByteString)
 import           Data.Either                   (fromRight)
 import           Data.Functor                  (void)
 import           Data.Maybe                    (fromJust)
-import           Data.Text                     hiding (head, take)
-
-import           System.Random
-
--- https://hackage.haskell.org/package/amqp-0.22.0/docs/Network-AMQP.html
-import           Network.AMQP
-
 import           Data.ProtoLens                (decodeMessage, showMessage)
 import qualified Data.ProtoLens.Message        as Proto (Message)
-
+import           Data.Text                     hiding (head, take)
+import           Network.AMQP
 import qualified Proto.Search                  as Search
+import           System.Random
 
 import           Amqp
 import           Handler
