@@ -1,3 +1,6 @@
+build:
+	stack build
+
 build-profile:
 	stack build --profile
 
