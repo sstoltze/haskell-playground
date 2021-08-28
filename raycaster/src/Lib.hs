@@ -1,11 +1,11 @@
 module Lib where
 
-import Space
-import Colour
-import Raycaster
-import Sphere
-import Codec.Picture
-import Variety
+import           Codec.Picture
+import           Colour
+import           Raycaster
+import           Space
+import           Sphere
+import           Variety
 
 simpleTest :: IO ()
 simpleTest = savePngImage "/tmp/out-simple.png" img
@@ -36,7 +36,7 @@ simpleTest = savePngImage "/tmp/out-simple.png" img
     gradientSphere = Left $ objectGradient $ Sphere (Position 0 0 0) 1 sphereColour
     lightnessSphere = Left $ objectLightness $ Sphere (Position 0 2 0) 1 sphereColour
     saturationSphere = Left $ objectSaturation $ Sphere (Position 0 (-2) 0) 1 sphereColour
-    cylinder = Right $ objectGradient $ cylinderVariety (Vector 0 0 1) 10 green
+    cylinder = Right $ objectGradient $ cylinderVariety (Position 0 0 0) (Vector 0 0 1) 10 green
 
 objectGradient :: SceneObject a => a -> TransmutedObject a
 objectGradient a = TransmutedObject { transmutedObject = a
@@ -88,8 +88,8 @@ testPic = picture testScene
                                                , yBound = Nothing
                                                , zBound = Just (1, 2)
                                                }
-    cylinderVar = Left $ Right $ objectGradient $ varietyTranslate (Vector (4) (-4) 0) $ cylinderVariety (Vector 0 0 1) 2 purple
-    surroundingCylinder = Left $ Left $ objectGradient $ cylinderVariety (Vector 0 0 1) (10) (inverseColour grey)
+    cylinderVar = Left $ Right $ objectGradient $ varietyTranslate (Vector (4) (-4) 0) $ cylinderVariety (Position 0 0 0) (Vector 0 0 1) 2 purple
+    surroundingCylinder = Left $ Left $ objectGradient $ cylinderVariety (Position 0 0 0) (Vector 0 0 1) (10) (inverseColour grey)
     testCamera = Camera (Position (-10) (0) 0) (Vector (1) 0 0) (Vector 0 0 1) (Resolution 500 500)
     testLightCamera = Light (cameraPosition testCamera)
     testLight = Light (Position (-9) (-1) (1))
