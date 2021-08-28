@@ -1,8 +1,8 @@
 module Sphere where
 
-import Colour
-import Space
-import Raycaster
+import           Colour
+import           Raycaster
+import           Space
 
 data Sphere = Sphere { sphereCentre :: Position Double
                      , sphereRadius :: Double

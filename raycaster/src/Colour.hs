@@ -1,14 +1,14 @@
 module Colour where
 
-import Codec.Picture (PixelRGB8(..))
+import           Codec.Picture (PixelRGB8 (..))
 
-data Colour = ColourRGB { colourRed :: Int
+data Colour = ColourRGB { colourRed   :: Int
                         , colourGreen :: Int
-                        , colourBlue :: Int
+                        , colourBlue  :: Int
                         }
-            | ColourHSL { colourHue :: Double
+            | ColourHSL { colourHue        :: Double
                         , colourSaturation :: Double
-                        , colourLightness :: Double
+                        , colourLightness  :: Double
                         }
             deriving Show
 
@@ -34,7 +34,7 @@ colourScale s (ColourRGB r g b) = createColour (scale r) (scale g) (scale b)
     scale n = round (s * fromIntegral n)
 
 inverseColour :: Colour -> Colour
-inverseColour c@ColourHSL {} = inverseColour $ colourToRgb c
+inverseColour c@ColourHSL {}    = inverseColour $ colourToRgb c
 inverseColour (ColourRGB r g b) = createColour (255 - r) (255 - g) (255 - b)
 
 colourToHsl :: Colour -> Colour
@@ -78,5 +78,5 @@ colourToRgb (ColourHSL h' saturation lightness) = createColour r g b
     b = round $ 255 * (b' + m)
 
 rotateColour :: Double -> Colour -> Colour
-rotateColour angle c@ColourRGB {} = rotateColour angle $ colourToHsl c
+rotateColour angle c@ColourRGB {}    = rotateColour angle $ colourToHsl c
 rotateColour angle (ColourHSL h s l) = createColourHsl (angle + h) s l

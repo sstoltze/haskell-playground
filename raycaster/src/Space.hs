@@ -72,7 +72,7 @@ positionSubtract
 positionDistance :: (Floating a) => Position a -> Position a -> a
 positionDistance p1 p2 = vectorLength $ positionSubtract p1 p2
 
-data Ray a = Ray { rayStart :: Position a
+data Ray a = Ray { rayStart     :: Position a
                  , rayDirection :: Vector a
                  } deriving Show
 

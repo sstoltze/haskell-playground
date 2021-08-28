@@ -1,17 +1,17 @@
 {-# LANGUAGE LambdaCase #-}
 module Variety where
 
-import Colour
-import Space
-import Polynomial
-import Raycaster
+import           Colour
+import           Polynomial
+import           Raycaster
+import           Space
 
-import Data.Functor((<&>))
-import Data.List (sort)
-import Data.Maybe (listToMaybe)
+import           Data.Functor ((<&>))
+import           Data.List    (sort)
+import           Data.Maybe   (listToMaybe)
 
 data Variety = Variety { varietyPolynomial :: Polynomial Double XYZ
-                       , varietyColour :: Colour
+                       , varietyColour     :: Colour
                        } deriving Show
 
 instance SceneObject Variety where

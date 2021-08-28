@@ -1,17 +1,17 @@
 module Raycaster where
 
-import Space
-import Colour
+import           Colour
+import           Space
 
-import Data.Maybe (listToMaybe, mapMaybe)
-import Data.List (sortBy)
+import           Data.List     (sortBy)
+import           Data.Maybe    (listToMaybe, mapMaybe)
 
-import Codec.Picture
+import           Codec.Picture
 
-data HitData = HitData { hitRay :: Ray Double
+data HitData = HitData { hitRay          :: Ray Double
                        , hitIntersection :: Double
-                       , hitColour :: Colour
-                       , hitNormal :: Vector Double
+                       , hitColour       :: Colour
+                       , hitNormal       :: Vector Double
                        } deriving Show
 
 hitPoint :: HitData -> Position Double
@@ -30,9 +30,9 @@ instance SceneObject a => SceneObject (Maybe a) where
   intersectRay r x = x >>= intersectRay r
 
 data BoundedObject a = BoundedObject { boundedObject :: a
-                                     , xBound :: Maybe (Double, Double)
-                                     , yBound :: Maybe (Double, Double)
-                                     , zBound :: Maybe (Double, Double)
+                                     , xBound        :: Maybe (Double, Double)
+                                     , yBound        :: Maybe (Double, Double)
+                                     , zBound        :: Maybe (Double, Double)
                                      }
 
 instance SceneObject a => SceneObject (BoundedObject a) where
@@ -48,7 +48,7 @@ instance SceneObject a => SceneObject (BoundedObject a) where
 
 type Material = (HitData -> Colour)
 
-data TransmutedObject a = TransmutedObject { transmutedObject :: a
+data TransmutedObject a = TransmutedObject { transmutedObject   :: a
                                            , transmutedMaterial :: Material
                                            }
 
@@ -60,23 +60,23 @@ rayIntersections ray objects = hitSort $ mapMaybe (intersectRay ray) objects
   where
     hitSort = sortBy (\h1 h2 -> compare (hitIntersection h1) (hitIntersection h2))
 
-data Resolution = Resolution { resolutionWidth :: Int
+data Resolution = Resolution { resolutionWidth  :: Int
                              , resolutionHeight :: Int
                              }
 
-data Camera = Camera { cameraPosition :: Position Double
-                     , cameraDirection :: Vector Double
-                     , cameraUp :: Vector Double
+data Camera = Camera { cameraPosition   :: Position Double
+                     , cameraDirection  :: Vector Double
+                     , cameraUp         :: Vector Double
                      , cameraResolution :: Resolution
                      }
 
 newtype Light = Light { lightPosition :: Position Double
                       }
 
-data Scene a = Scene { sceneObject :: a
+data Scene a = Scene { sceneObject     :: a
                      , sceneBackground :: Colour
-                     , sceneCamera :: Camera
-                     , sceneLights :: [Light]
+                     , sceneCamera     :: Camera
+                     , sceneLights     :: [Light]
                      }
 
 cameraRay :: Camera -> Int -> Int -> Ray Double

@@ -1,9 +1,9 @@
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE LambdaCase    #-}
 
 module Polynomial where
 
-import Data.Maybe (maybeToList)
+import           Data.Maybe (maybeToList)
 
 data XYZ = X | Y | Z deriving (Show, Eq)
 data T = T deriving (Show, Eq)
@@ -16,9 +16,9 @@ data Polynomial a v = Const a
                     deriving (Eq, Functor)
 
 instance (Show a, Show v) => Show (Polynomial a v) where
-  show (Const a) = show a
-  show (Var v) = show v
-  show (Sum p q) = "(" ++ show p ++ " + " ++ show q ++ ")"
+  show (Const a)  = show a
+  show (Var v)    = show v
+  show (Sum p q)  = "(" ++ show p ++ " + " ++ show q ++ ")"
   show (Prod p q) = "(" ++ show p ++ " * " ++ show q ++ ")"
 
 instance (Num a) => Num (Polynomial a v) where
@@ -31,9 +31,9 @@ instance (Num a) => Num (Polynomial a v) where
   signum p = p
 
 typeOfTerm :: Polynomial a v -> String
-typeOfTerm (Const _) = "Const"
-typeOfTerm (Var _) = "Var"
-typeOfTerm (Sum _ _) = "Sum"
+typeOfTerm (Const _)  = "Const"
+typeOfTerm (Var _)    = "Var"
+typeOfTerm (Sum _ _)  = "Sum"
 typeOfTerm (Prod _ _) = "Prod"
 
 sameType :: Polynomial a v -> Polynomial b w -> Bool
@@ -44,15 +44,15 @@ testPoly = Var T * (Const 2 + Var T + Const 10)
 
 changeVariables :: (v -> Polynomial a w) -> Polynomial a v -> Polynomial a w
 changeVariables newVar = \case
-  Const a -> Const a
-  Var v -> newVar v
-  Sum p q -> Sum (changeVariables newVar p) (changeVariables newVar q)
+  Const a  -> Const a
+  Var v    -> newVar v
+  Sum p q  -> Sum (changeVariables newVar p) (changeVariables newVar q)
   Prod p q -> Prod (changeVariables newVar p) (changeVariables newVar q)
 
 derive :: (Num a) => (v -> Polynomial a v) -> Polynomial a v -> Polynomial a v
-derive _ (Const _) = Const 0
-derive f (Var v) = f v
-derive f (Sum p q) = Sum (derive f p) (derive f q)
+derive _ (Const _)  = Const 0
+derive f (Var v)    = f v
+derive f (Sum p q)  = Sum (derive f p) (derive f q)
 derive f (Prod p q) = Sum (Prod (derive f p) q) (Prod p (derive f q))
 
 deriveCoefficients :: (Num a) => [a] -> [a]
@@ -93,18 +93,18 @@ expand (Var v) = Var v
 
 evaluate :: (Num a) => (v -> a) -> Polynomial a v -> a
 evaluate f = \case
-  Const a -> a
-  Var v -> f v
-  Sum p q -> evaluate f p + evaluate f q
+  Const a  -> a
+  Var v    -> f v
+  Sum p q  -> evaluate f p + evaluate f q
   Prod p q -> evaluate f p * evaluate f q
 
 evaluateCoefficients :: (Num a) => [a] -> a -> a
 evaluateCoefficients p x = sum $ zipWith (*) p $ iterate (*x) 1
 
 degree :: Polynomial a T -> Int
-degree (Const _) = 0
-degree (Var _) = 1
-degree (Sum p q) = max (degree p) (degree q)
+degree (Const _)  = 0
+degree (Var _)    = 1
+degree (Sum p q)  = max (degree p) (degree q)
 degree (Prod p q) = degree p + degree q
 
 newton :: (Fractional a) => (a -> Bool) -> Int -> Polynomial a T -> [a]
@@ -141,8 +141,8 @@ polynomiumCoefficients (Sum p q) = coefficientSum pCoeffs qCoeffs
   where
     pCoeffs = polynomiumCoefficients p
     qCoeffs = polynomiumCoefficients q
-    coefficientSum [] b = b
-    coefficientSum a [] = a
+    coefficientSum [] b          = b
+    coefficientSum a []          = a
     coefficientSum (a:as) (b:bs) = a+b : coefficientSum as bs
 polynomiumCoefficients (Prod p q) = [prodCoefficient i | i <- [0..(pDeg + qDeg)]]
   where
