@@ -1,4 +1,4 @@
-cabal-version: 1.24
+cabal-version: 2.0
 
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
@@ -25,10 +25,26 @@ custom-setup
 
 library
   exposed-modules:
+      Amqp
+      Config
+      Elasticsearch
+      Handler
+      Handlers.GetSearchSuggestions
+      Handlers.SubmitSearchQuery
+      Protobuf
+      Statsd
+      Types.Elasticsearch
+      Types.Handler
+      Types.Statsd
       Proto.Search
       Proto.Search_Fields
   other-modules:
       Paths_service_search_suggestions
+  autogen-modules:
+      Proto.Search
+      Proto.Search_Fields
+  hs-source-dirs:
+      src
   build-tool-depends:
       proto-lens-protoc:proto-lens-protoc
   build-depends:
@@ -50,21 +66,9 @@ library
 executable send-test-requests
   main-is: Send.hs
   other-modules:
-      Amqp
-      Config
-      Elasticsearch
-      Handler
-      Handlers.GetSearchSuggestions
-      Handlers.SubmitSearchQuery
-      Protobuf
-      Statsd
-      Types.Elasticsearch
-      Types.Handler
-      Types.Statsd
       Paths_service_search_suggestions
   hs-source-dirs:
       test
-      src
   build-tool-depends:
       proto-lens-protoc:proto-lens-protoc
   build-depends:
@@ -87,21 +91,9 @@ executable send-test-requests
 executable service-search-suggestions
   main-is: Main.hs
   other-modules:
-      Amqp
-      Config
-      Elasticsearch
-      Handler
-      Handlers.GetSearchSuggestions
-      Handlers.SubmitSearchQuery
-      Protobuf
-      Statsd
-      Types.Elasticsearch
-      Types.Handler
-      Types.Statsd
       Paths_service_search_suggestions
   hs-source-dirs:
       app
-      src
   build-tool-depends:
       proto-lens-protoc:proto-lens-protoc
   build-depends:

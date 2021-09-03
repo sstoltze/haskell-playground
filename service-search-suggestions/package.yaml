@@ -35,11 +35,14 @@ build-tools: proto-lens-protoc:proto-lens-protoc
 extra-source-files: proto/**/*.proto
 
 library:
+  source-dirs:
+    - src
+
   dependencies:
     - base
     - proto-lens-runtime
 
-  exposed-modules:
+  generated-exposed-modules:
     - Proto.Search
     - Proto.Search_Fields
 
@@ -48,7 +51,6 @@ executables:
     main: Main.hs
     source-dirs:
       - app
-      - src
     dependencies:
       - service-search-suggestions
 
@@ -56,7 +58,6 @@ executables:
     main: Send.hs
     source-dirs:
       - test
-      - src
     dependencies:
       - service-search-suggestions
       - random
