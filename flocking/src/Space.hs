@@ -1,6 +1,6 @@
 module Space where
 
-import System.Random (RandomGen, randomR, Random)
+import           System.Random (Random, RandomGen, randomR)
 
 data Point a = Point { pointX :: a
                      , pointY :: a
@@ -41,7 +41,7 @@ dotProduct :: (Num a) => Vector a -> Vector a -> a
 dotProduct
   (Vector v1x v1y v1z)
   (Vector v2x v2y v2z) =
-   (v1x * v2x) + (v1y * v2y) + (v1z * v2z)
+   v1x * v2x + v1y * v2y + v1z * v2z
 
 vectorLength :: (Floating a) => Vector a -> a
 vectorLength (Vector x y z) = sqrt $ square x + square y + square z

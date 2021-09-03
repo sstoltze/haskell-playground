@@ -1,17 +1,18 @@
 module Main where
 
-import Flock
-import Entity
-import Space
-import Codec.Picture
+import           Codec.Picture
+import           Entity
+import           Flock
+import           Space
 
-import System.Environment (getArgs)
-import System.Random
+import           Data.Functor       ((<&>))
+import           System.Environment (getArgs)
+import           System.Random
 
-data AppConfig = AppConfig { numberOfRuns :: Int
+data AppConfig = AppConfig { numberOfRuns     :: Int
                            , numberOfEntities :: Int
-                           , pictureWidth :: Int
-                           , pictureHeight :: Int
+                           , pictureWidth     :: Int
+                           , pictureHeight    :: Int
                            }
 
 defaultAppConfig :: AppConfig
@@ -48,8 +49,7 @@ flockRun config = flockRun' 0
 
 main :: IO ()
 main = do
-  args <- getArgs
-  let config = parseArgs args
+  config <- getArgs <&> parseArgs
   g <- getStdGen
   let (f, _) = planeFlockRandom (numberOfEntities config) g
   _ <- flockRun config f
