@@ -9,6 +9,7 @@ module Statsd (HandlerCounter(..),
                statsdHandlerSuccess,
                statsdHandlerFailure) where
 
+import           Configuration.Dotenv            (defaultConfig, loadFile)
 import           Control.Monad.IO.Class
 import           Control.Monad.Reader
 import qualified Data.Text                       as T
@@ -33,6 +34,7 @@ setupStatsdStore opts = do
 
 statsdStoreFromEnv :: IO Store
 statsdStoreFromEnv = do
+  void $ loadFile defaultConfig
   sdHost <- maybe "" T.pack <$> lookupEnv "STATSD_HOST"
   sdPrefix <- maybe "" T.pack <$> lookupEnv "STATSD_PREFIX"
   setupStatsdStore $ statsdClient sdHost sdPrefix
