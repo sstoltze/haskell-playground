@@ -17,20 +17,25 @@ decodeCodeowners decodeCodeowners49,50
 ./Setup.hs,15
 main main1,2
 
-./codeowners/Main.hs,76
+./codeowners/Main.hs,193
 module Main Main1,2
 main main12,13
 printCodeowner printCodeowner21,22
+formatCodeowner formatCodeowner25,26
+removeComments removeComments28,29
+removeEmptyLines removeEmptyLines33,34
 
-./codeowners/AppConfig.hs,548
-data AppConfig AppConfig15,16
-data AppConfig = AppConfig AppConfig15,16
-data AppConfig = AppConfig { appConfigOwner appConfigOwner15,16
-                           , appConfigRepos appConfigRepos16,17
-                           , appConfigGitHubSettings appConfigGitHubSettings17,18
-defaultAppConfig defaultAppConfig20,21
-defaultGitHubSettings defaultGitHubSettings30,31
-loadConfigFile loadConfigFile36,37
-ownerFromEnv ownerFromEnv48,49
-githubSettingsFromEnv githubSettingsFromEnv51,52
-appConfigFromArgs appConfigFromArgs54,55
+./codeowners/AppConfig.hs,720
+data AppConfig AppConfig14,15
+data AppConfig = AppConfig AppConfig14,15
+data AppConfig = AppConfig { appConfigOwner appConfigOwner14,15
+                           , appConfigRepos appConfigRepos15,16
+                           , appConfigGitHubSettings appConfigGitHubSettings16,17
+                           , appConfigRemoveComments appConfigRemoveComments17,18
+                           , appConfigRemoveEmptyLines appConfigRemoveEmptyLines18,19
+defaultAppConfig defaultAppConfig21,22
+defaultGitHubSettings defaultGitHubSettings33,34
+loadConfigFile loadConfigFile39,40
+ownerFromEnv ownerFromEnv51,52
+githubSettingsFromEnv githubSettingsFromEnv54,55
+appConfigFromArgs appConfigFromArgs57,58

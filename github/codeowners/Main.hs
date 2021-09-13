@@ -17,8 +17,21 @@ main = do
     owner <- runGitHubT (appConfigGitHubSettings conf) $ do
       codeowner <- repoCodeowners (appConfigOwner conf) repo
       return (repo, codeowner)
-    printCodeowner owner
+    printCodeowner conf owner
 
-printCodeowner :: (T.Text, Either T.Text T.Text) -> IO ()
-printCodeowner (r, Left e)  = putStrLn $ T.unpack $ T.concat ["Error getting owners for ", r, ":\n", e, "\n"]
-printCodeowner (r, Right s) = putStr $ T.unpack $ T.concat ["Owners for ", r, ":\n", s, "\n"]
+printCodeowner :: AppConfig -> (T.Text, Either T.Text T.Text) -> IO ()
+printCodeowner _ (r, Left e)  = putStr $ T.unpack $ T.concat ["Error getting owners for ", r, ":\n", e, "\n"]
+printCodeowner c (r, Right s) = putStr $ T.unpack $ T.concat ["Owners for ", r, ":\n", formatCodeowner c s, "\n"]
+
+formatCodeowner :: AppConfig -> T.Text -> T.Text
+formatCodeowner c = removeEmptyLines c . removeComments c
+
+removeComments :: AppConfig -> T.Text -> T.Text
+removeComments (AppConfig { appConfigRemoveComments = False }) = id
+removeComments (AppConfig { appConfigRemoveComments = True }) =
+  T.unlines . filter (not . T.isPrefixOf "#" . T.strip) . T.lines
+
+removeEmptyLines :: AppConfig -> T.Text -> T.Text
+removeEmptyLines (AppConfig { appConfigRemoveEmptyLines = False }) = id
+removeEmptyLines (AppConfig { appConfigRemoveEmptyLines = True }) =
+  T.unlines . filter (not . T.null) . T.lines
