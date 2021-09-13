@@ -1,0 +1,36 @@
+
+./test/Spec.hs,15
+main main0,1
+
+./src/Lib.hs,339
+module Lib Lib1,2
+ghGetRequest ghGetRequest12,13
+orgReposRequest orgReposRequest20,21
+getContentRequest getContentRequest23,24
+orgReposAll orgReposAll30,31
+repoContent repoContent33,34
+repoCodeowners repoCodeowners36,37
+reposCodeowners reposCodeowners43,44
+repoName repoName46,47
+decodeCodeowners decodeCodeowners49,50
+
+./Setup.hs,15
+main main1,2
+
+./codeowners/Main.hs,76
+module Main Main1,2
+main main12,13
+printCodeowner printCodeowner21,22
+
+./codeowners/AppConfig.hs,548
+data AppConfig AppConfig15,16
+data AppConfig = AppConfig AppConfig15,16
+data AppConfig = AppConfig { appConfigOwner appConfigOwner15,16
+                           , appConfigRepos appConfigRepos16,17
+                           , appConfigGitHubSettings appConfigGitHubSettings17,18
+defaultAppConfig defaultAppConfig20,21
+defaultGitHubSettings defaultGitHubSettings30,31
+loadConfigFile loadConfigFile36,37
+ownerFromEnv ownerFromEnv48,49
+githubSettingsFromEnv githubSettingsFromEnv51,52
+appConfigFromArgs appConfigFromArgs54,55
