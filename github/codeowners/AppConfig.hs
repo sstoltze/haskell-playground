@@ -12,8 +12,11 @@ import           System.Directory     (doesFileExist, getCurrentDirectory,
 import           System.Environment   (getArgs, getEnv)
 import           System.FilePath      (takeFileName)
 
-data AppConfig = AppConfig { appConfigOwner            :: T.Text
-                           , appConfigRepos            :: [T.Text]
+data AppConfigRepo = AppConfigRepo { repoRepo  :: T.Text
+                                   , repoOwner :: T.Text
+                                   }
+
+data AppConfig = AppConfig { appConfigRepos            :: [AppConfigRepo]
                            , appConfigGitHubSettings   :: GitHubSettings
                            , appConfigRemoveComments   :: Bool
                            , appConfigRemoveEmptyLines :: Bool
@@ -21,11 +24,8 @@ data AppConfig = AppConfig { appConfigOwner            :: T.Text
 
 defaultAppConfig :: IO AppConfig
 defaultAppConfig = do
-  loadConfigFile
   ghSettings <- githubSettingsFromEnv
-  owner <- ownerFromEnv
-  return AppConfig { appConfigOwner = owner
-                   , appConfigRepos = []
+  return AppConfig { appConfigRepos = []
                    , appConfigGitHubSettings = ghSettings
                    , appConfigRemoveComments = False
                    , appConfigRemoveEmptyLines = False
@@ -58,15 +58,17 @@ githubSettingsFromEnv = defaultGitHubSettings <$> getEnv "GITHUB_PERSONAL_ACCESS
 appConfigFromArgs :: IO AppConfig
 appConfigFromArgs = do
   args <- getArgs
+  loadConfigFile
   conf <- defaultAppConfig
+  defaultOwner <- ownerFromEnv
   curDir <- T.pack . takeFileName <$> getCurrentDirectory
-  return $ setDefaultDirectory curDir $ updateFromArgs conf args
+  return $ setDefaultDirectory defaultOwner curDir $ updateFromArgs conf defaultOwner args
     where
-      updateFromArgs c []                          = c
-      updateFromArgs c ("--owner":o:as)            = updateFromArgs (c { appConfigOwner = T.pack o }) as
-      updateFromArgs c ("--token":t:as)            = updateFromArgs (c { appConfigGitHubSettings = defaultGitHubSettings t }) as
-      updateFromArgs c ("--remove-comments":as)    = updateFromArgs (c { appConfigRemoveComments = True }) as
-      updateFromArgs c ("--remove-empty-lines":as) = updateFromArgs (c { appConfigRemoveEmptyLines = True }) as
-      updateFromArgs c (f:as)                      = updateFromArgs (c { appConfigRepos = T.pack f : appConfigRepos c }) as
-      setDefaultDirectory d c@AppConfig { appConfigRepos = [] } = c { appConfigRepos = [d] }
-      setDefaultDirectory _ c = c
+      updateFromArgs c _ []                                     = c { appConfigRepos = reverse $ appConfigRepos c }
+      updateFromArgs c _ ("--owner":o:as)                       = updateFromArgs c (T.pack o) as
+      updateFromArgs c currentOwner ("--token":t:as)            = updateFromArgs (c { appConfigGitHubSettings = defaultGitHubSettings t }) currentOwner as
+      updateFromArgs c currentOwner ("--remove-comments":as)    = updateFromArgs (c { appConfigRemoveComments = True }) currentOwner as
+      updateFromArgs c currentOwner ("--remove-empty-lines":as) = updateFromArgs (c { appConfigRemoveEmptyLines = True }) currentOwner as
+      updateFromArgs c currentOwner (f:as)                      = updateFromArgs (c { appConfigRepos = AppConfigRepo currentOwner (T.pack f) : appConfigRepos c }) currentOwner as
+      setDefaultDirectory o d c@AppConfig { appConfigRepos = [] } = c { appConfigRepos = [(AppConfigRepo o d)] }
+      setDefaultDirectory _ _ c = c

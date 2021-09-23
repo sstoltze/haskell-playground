@@ -13,9 +13,9 @@ import           Lib
 main :: IO ()
 main = do
   conf <- appConfigFromArgs
-  forM_ (appConfigRepos conf) $ \repo -> do
+  forM_ (appConfigRepos conf) $ \(AppConfigRepo o repo) -> do
     owner <- runGitHubT (appConfigGitHubSettings conf) $ do
-      codeowner <- repoCodeowners (appConfigOwner conf) repo
+      codeowner <- repoCodeowners o repo
       return (repo, codeowner)
     printCodeowner conf owner
 
