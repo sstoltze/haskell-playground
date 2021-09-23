@@ -1,41 +1,0 @@
-
-./test/Spec.hs,15
-main main0,1
-
-./src/Lib.hs,339
-module Lib Lib1,2
-ghGetRequest ghGetRequest12,13
-orgReposRequest orgReposRequest20,21
-getContentRequest getContentRequest23,24
-orgReposAll orgReposAll30,31
-repoContent repoContent33,34
-repoCodeowners repoCodeowners36,37
-reposCodeowners reposCodeowners43,44
-repoName repoName46,47
-decodeCodeowners decodeCodeowners49,50
-
-./Setup.hs,15
-main main1,2
-
-./codeowners/Main.hs,193
-module Main Main1,2
-main main12,13
-printCodeowner printCodeowner21,22
-formatCodeowner formatCodeowner25,26
-removeComments removeComments28,29
-removeEmptyLines removeEmptyLines33,34
-
-./codeowners/AppConfig.hs,720
-data AppConfig AppConfig14,15
-data AppConfig = AppConfig AppConfig14,15
-data AppConfig = AppConfig { appConfigOwner appConfigOwner14,15
-                           , appConfigRepos appConfigRepos15,16
-                           , appConfigGitHubSettings appConfigGitHubSettings16,17
-                           , appConfigRemoveComments appConfigRemoveComments17,18
-                           , appConfigRemoveEmptyLines appConfigRemoveEmptyLines18,19
-defaultAppConfig defaultAppConfig21,22
-defaultGitHubSettings defaultGitHubSettings33,34
-loadConfigFile loadConfigFile39,40
-ownerFromEnv ownerFromEnv51,52
-githubSettingsFromEnv githubSettingsFromEnv54,55
-appConfigFromArgs appConfigFromArgs57,58
