@@ -1,8 +1,8 @@
 module Svg where
 
-import Data.List (intercalate, intersperse)
-import Types
-import Text.Printf
+import           Data.List   (intercalate, intersperse)
+import           Text.Printf
+import           Types
 
 labelWidth :: Int
 labelWidth = 300
@@ -47,7 +47,7 @@ svgPoint p = printf "%.2f" (pointX p) ++ "," ++ printf "%.2f" (pointY p)
 svgTitles :: (PrintfArg a) => Chart a -> String
 svgTitles c = svgTitles' "" 1 (chartData c)
   where
-    svgTitles' acc _ [] = acc
+    svgTitles' acc _ []     = acc
     svgTitles' acc i (d:ds) = svgTitles' (acc ++ svgTitle i d) (i+1) ds
     svgTitle i d =
       let colour = hexColour $ datasetColour d in
@@ -76,7 +76,7 @@ svgCircle d = concat svgCircles
     svgCircles = pointToSvgCircle <$> datasetPoints d
 
 instance PrintfArg a => Svg (Dataset a) where
-  showSvg d@Dataset { datasetType = Line } = svgLine d
+  showSvg d@Dataset { datasetType = Line }    = svgLine d
   showSvg d@Dataset { datasetType = Circles } = svgCircle d
 
 svgChart :: (PrintfArg a) => Chart a -> String
@@ -92,15 +92,10 @@ svgScaleDataset :: (Fractional a, Ord a) => a -> a -> Dataset a -> Dataset a
 svgScaleDataset width height d@Dataset {datasetPoints = points} =
   d { datasetPoints = fmap scale points }
   where
+    delta l = maximum l - minimum l
     ys = map pointY points
-    minY = minimum ys
-    maxY = maximum ys
-    deltaY = maxY - minY
     xs = map pointX points
-    minX = minimum xs
-    maxX = maximum xs
-    deltaX = maxX - minX
-    scale p = (width * (pointX p - minX) / deltaX, height - height * (pointY p - minY) / deltaY)
+    scale p = (width * (pointX p - minimum xs) / delta xs, height - height * (pointY p - minimum ys) / delta ys)
 
 svgScaleChart :: (Fractional a, Ord a) => Chart a -> Chart a
 svgScaleChart c@Chart { chartWidth = w, chartHeight = h, chartData = d } =
