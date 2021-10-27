@@ -1,0 +1,106 @@
+cabal-version: 2.0
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           rpc-client
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/sstoltze/rpc-client#readme>
+homepage:       https://github.com/sstoltze/rpc-client#readme
+bug-reports:    https://github.com/sstoltze/rpc-client/issues
+author:         Sarah Stoltze
+maintainer:     sstoltze@gmail.com
+copyright:      2021 Sarah Stoltze
+license:        BSD3
+license-file:   LICENSE
+build-type:     Custom
+extra-source-files:
+    README.md
+    ChangeLog.md
+    proto/entity_user.proto
+    proto/search.proto
+    proto/test.proto
+
+source-repository head
+  type: git
+  location: https://github.com/sstoltze/rpc-client
+
+custom-setup
+  setup-depends:
+      Cabal
+    , base
+    , proto-lens-setup
+
+library
+  exposed-modules:
+      Amqp
+      Client
+      Proto.Test
+      Proto.Test_Fields
+  other-modules:
+      Paths_rpc_client
+  autogen-modules:
+      Proto.Test
+      Proto.Test_Fields
+  hs-source-dirs:
+      src
+  build-tool-depends:
+      proto-lens-protoc:proto-lens-protoc
+  build-depends:
+      amqp
+    , base
+    , bytestring
+    , containers
+    , microlens
+    , proto-lens
+    , proto-lens-protobuf-types
+    , proto-lens-runtime
+    , random
+    , text
+  default-language: Haskell2010
+
+executable rpc-client-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_rpc_client
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      proto-lens-protoc:proto-lens-protoc
+  build-depends:
+      amqp
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , dotenv
+    , microlens
+    , proto-lens
+    , random
+    , rpc-client
+    , text
+  default-language: Haskell2010
+
+test-suite rpc-client-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_rpc_client
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      proto-lens-protoc:proto-lens-protoc
+  build-depends:
+      amqp
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , dotenv
+    , microlens
+    , proto-lens
+    , random
+    , rpc-client
+    , text
+  default-language: Haskell2010
