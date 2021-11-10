@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module AppConfig where
+module AppConfig (AppConfig(..), AppConfigRepo(..), appConfigFromArgs) where
 
 import           Configuration.Dotenv (Config (..), defaultConfig, loadFile)
 import           Control.Monad        (when)
@@ -69,6 +69,6 @@ appConfigFromArgs = do
       updateFromArgs c currentOwner ("--token":t:as)            = updateFromArgs (c { appConfigGitHubSettings = defaultGitHubSettings t }) currentOwner as
       updateFromArgs c currentOwner ("--remove-comments":as)    = updateFromArgs (c { appConfigRemoveComments = True }) currentOwner as
       updateFromArgs c currentOwner ("--remove-empty-lines":as) = updateFromArgs (c { appConfigRemoveEmptyLines = True }) currentOwner as
-      updateFromArgs c currentOwner (f:as)                      = updateFromArgs (c { appConfigRepos = AppConfigRepo currentOwner (T.pack f) : appConfigRepos c }) currentOwner as
-      setDefaultDirectory o d c@AppConfig { appConfigRepos = [] } = c { appConfigRepos = [(AppConfigRepo o d)] }
+      updateFromArgs c currentOwner (f:as)                      = updateFromArgs (c { appConfigRepos = AppConfigRepo { repoRepo = T.pack f, repoOwner = currentOwner} : appConfigRepos c }) currentOwner as
+      setDefaultDirectory o d c@AppConfig { appConfigRepos = [] } = c { appConfigRepos = [AppConfigRepo { repoRepo = d, repoOwner = o }] }
       setDefaultDirectory _ _ c = c

@@ -46,6 +46,7 @@ executables:
     dependencies:
       - github
       - dotenv
+      - streaming
 
 tests:
   github-test:

@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Lib where
+module Lib (repoCodeowners) where
 
 import qualified Data.Aeson                as Aeson
 import           Data.Either               (partitionEithers)
@@ -36,7 +36,7 @@ repoContent owner repo path = queryGitHub $ getContentRequest owner repo path
 
 repoCodeowners :: T.Text -> T.Text -> GitHubT IO (Either T.Text T.Text)
 repoCodeowners owner repo = do
-  tryGetOwners <- githubTry' status404 (repoContent  owner repo "CODEOWNERS")
+  tryGetOwners <- githubTry' status404 (repoContent owner repo "CODEOWNERS")
   case tryGetOwners of
     Left _          -> return $ Left "No codeowners file in repository."
     Right jsonValue -> return $ decodeCodeowners $ jsonValue .: "content"
