@@ -2,24 +2,23 @@
 module Main where
 
 import           Configuration.Dotenv (defaultConfig, loadFile)
-import           Data.Functor         (void)
+import           Control.Concurrent
+import           Control.Monad
 import           Data.Maybe           (fromJust)
 import           Data.ProtoLens       (defMessage, showMessage)
 import qualified Data.Text            as T
-import           GHC.Word             (Word32)
-import           Lens.Micro
 import           System.Environment   (lookupEnv)
+import           Test.QuickCheck
 
 import qualified Proto.Test           as Test
-import qualified Proto.Test_Fields    as Test
 
 import           Amqp
 import           Client
+import           Generate
+import           Util
 
-buildTestRequest :: T.Text -> Test.TestRequest
-buildTestRequest query =
-  defMessage
-  & Test.query .~ query
+numberOfSenders :: Int
+numberOfSenders = 10
 
 main :: IO ()
 main = do
@@ -27,8 +26,17 @@ main = do
   conn <- amqpConnectionFromEnv
   channel <- createChannel conn
   client <- makeRpcClient channel
-  let searchQuery = "test"
-  let request = buildTestRequest searchQuery
-  routingKey <- T.pack . fromJust <$> lookupEnv "ROUTING_KEY"
-  reply <- call client routingKey request :: IO (Either String Test.TestResponse)
-  putStrLn $ either id showMessage reply
+  results <- newResults
+  putStrLn "ready"
+  callThreads <- forM [1..numberOfSenders] $ const $ forkIO $ forever $ do
+    request <- buildTestRequest
+    routingKey <- T.pack . fromJust <$> lookupEnv "ROUTING_KEY"
+    reply <- call client routingKey request :: IO (Either String Test.TestResponse)
+    putResult results reply
+  printThread <- forkIO $ forever $ do
+    threadDelay oneSecond
+    printResults results
+  let threads = printThread : callThreads
+  installKillHandler threads
+  void getLine
+  mapM_ killThread threads

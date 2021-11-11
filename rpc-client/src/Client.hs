@@ -14,7 +14,6 @@ import           System.Random
 
 import           Amqp
 
-
 data RpcClient = RpcClient { rpcChannel    :: AMQP.Channel
                            , rpcRoutingKey :: T.Text
                            , rpcStorage    :: MVar (Map.Map T.Text (MVar ByteString))

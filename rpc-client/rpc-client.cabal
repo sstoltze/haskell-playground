@@ -63,6 +63,8 @@ library
 executable rpc-client-exe
   main-is: Main.hs
   other-modules:
+      Generate
+      Util
       Paths_rpc_client
   hs-source-dirs:
       app
@@ -70,7 +72,8 @@ executable rpc-client-exe
   build-tool-depends:
       proto-lens-protoc:proto-lens-protoc
   build-depends:
-      amqp
+      QuickCheck
+    , amqp
     , base >=4.7 && <5
     , bytestring
     , containers
@@ -80,6 +83,7 @@ executable rpc-client-exe
     , random
     , rpc-client
     , text
+    , unix
   default-language: Haskell2010
 
 test-suite rpc-client-test
