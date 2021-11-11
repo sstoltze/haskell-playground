@@ -53,7 +53,8 @@ library:
 executables:
   rpc-client-exe:
     main:                Main.hs
-    source-dirs:         app
+    source-dirs:
+    - app
     ghc-options:
     - -threaded
     - -rtsopts
@@ -61,9 +62,7 @@ executables:
     dependencies:
     - rpc-client
     - dotenv
-    - unix
     - QuickCheck
-
 
 tests:
   rpc-client-test:

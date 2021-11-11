@@ -18,8 +18,6 @@ build-type:     Custom
 extra-source-files:
     README.md
     ChangeLog.md
-    proto/entity_user.proto
-    proto/search.proto
     proto/test.proto
 
 source-repository head
@@ -83,7 +81,6 @@ executable rpc-client-exe
     , random
     , rpc-client
     , text
-    , unix
   default-language: Haskell2010
 
 test-suite rpc-client-test
