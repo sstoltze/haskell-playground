@@ -1,11 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Amqp (amqpConnectionFromEnv,
-             createChannel,
-             defaultExchangeName,
-             directExchange,
-             setupHandlerQueue,
-             setupReplyQueue) where
+module Amqp
+  ( amqpConnectionFromEnv,
+    createChannel,
+    defaultExchangeName,
+    directExchange,
+    setupHandlerQueue,
+    setupReplyQueue,
+  )
+where
 
 import           Data.Functor       (void)
 import           Data.Maybe         (fromJust)
@@ -14,16 +17,20 @@ import           Network.AMQP
 import           System.Environment (lookupEnv)
 
 replyQueueOpts :: T.Text -> QueueOpts
-replyQueueOpts queue = newQueue { queueName = queue
-                                , queueAutoDelete = True
-                                , queueExclusive = True
-                                }
+replyQueueOpts queue =
+  newQueue
+    { queueName = queue,
+      queueAutoDelete = True,
+      queueExclusive = True
+    }
 
 handlerQueueOpts :: T.Text -> QueueOpts
-handlerQueueOpts queue = newQueue { queueName = queue
-                                  , queueAutoDelete = True
-                                  , queueDurable = False
-                                  }
+handlerQueueOpts queue =
+  newQueue
+    { queueName = queue,
+      queueAutoDelete = True,
+      queueDurable = False
+    }
 
 declareAndBindQueue :: Channel -> QueueOpts -> T.Text -> IO ()
 declareAndBindQueue channel opts routingKey = do
@@ -40,17 +47,18 @@ setupReplyQueue channel replyTo =
 
 amqpConnectionFromEnv :: IO Connection
 amqpConnectionFromEnv = do
-
   host <- fromJust <$> lookupEnv "AMQP_HOST"
   user <- maybe "guest" T.pack <$> lookupEnv "AMQP_USERNAME"
   pass <- maybe "guest" T.pack <$> lookupEnv "AMQP_PASSWORD"
   openConnection host "/" user pass
 
 directExchange :: ExchangeOpts
-directExchange = newExchange { exchangeName = "amq.direct"
-                             , exchangeType = "direct"
-                             , exchangeDurable = True
-                             }
+directExchange =
+  newExchange
+    { exchangeName = "amq.direct",
+      exchangeType = "direct",
+      exchangeDurable = True
+    }
 
 defaultExchangeName :: T.Text
 defaultExchangeName = ""
