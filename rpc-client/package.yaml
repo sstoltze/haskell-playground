@@ -63,6 +63,7 @@ executables:
     - rpc-client
     - dotenv
     - QuickCheck
+    - unix
 
 tests:
   rpc-client-test:
