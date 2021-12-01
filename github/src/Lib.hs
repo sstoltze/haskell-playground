@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Lib (repoCodeowners) where
 
 import qualified Data.Aeson                as Aeson
@@ -12,21 +13,24 @@ import           Network.HTTP.Types        (StdMethod (GET), status404)
 
 ghGetRequest :: T.Text -> EndpointVals -> GHEndpoint
 ghGetRequest ghEndpoint values =
-  GHEndpoint { method = GET
-             , endpoint = ghEndpoint
-             , endpointVals = values
-             , ghData = []
-             }
+  GHEndpoint
+    { method = GET,
+      endpoint = ghEndpoint,
+      endpointVals = values,
+      ghData = []
+    }
 
 orgReposRequest :: T.Text -> GHEndpoint
-orgReposRequest org = ghGetRequest "/orgs/:org/repos" [ "org" := org ]
+orgReposRequest org = ghGetRequest "/orgs/:org/repos" ["org" := org]
 
 getContentRequest :: T.Text -> T.Text -> T.Text -> GHEndpoint
 getContentRequest owner repo path =
-  ghGetRequest "/repos/:owner/:repo/contents/:path" [ "owner" := owner
-                                                    , "repo" := repo
-                                                    , "path" := path
-                                                    ]
+  ghGetRequest
+    "/repos/:owner/:repo/contents/:path"
+    [ "owner" := owner,
+      "repo" := repo,
+      "path" := path
+    ]
 
 orgReposAll :: T.Text -> GitHubT IO [Aeson.Value]
 orgReposAll = queryGitHubAll . orgReposRequest
@@ -48,9 +52,10 @@ repoName :: Aeson.Value -> T.Text
 repoName r = r .: "name"
 
 decodeCodeowners :: T.Text -> Either T.Text T.Text
-decodeCodeowners s = if null failed
-  then Right $ T.concat succeeded
-  else Left $ T.append "Could not base64 decode: " $ head failed
+decodeCodeowners s =
+  if null failed
+    then Right $ T.concat succeeded
+    else Left $ T.append "Could not base64 decode: " $ head failed
   where
     encodedOwnerLines = T.splitOn "\n" $ T.strip s
     (failed, succeeded) = partitionEithers $ fmap decodeBase64 encodedOwnerLines
