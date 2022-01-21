@@ -14,7 +14,8 @@ data AppConfig = AppConfig
     numberOfEntities :: Int,
     pictureWidth     :: Int,
     pictureHeight    :: Int,
-    imageDirectory   :: String
+    imageDirectory   :: String,
+    flockConfig      :: FlockConfig
   }
 
 defaultAppConfig :: AppConfig
@@ -24,7 +25,8 @@ defaultAppConfig =
       numberOfEntities = 20,
       pictureWidth = 500,
       pictureHeight = 500,
-      imageDirectory = "/tmp/"
+      imageDirectory = "/tmp/",
+      flockConfig = defaultFlockConfig
     }
 
 flockDraw :: AppConfig -> Flock -> DynamicImage
@@ -59,7 +61,7 @@ flockRun config = flockRun' 0
           let fileName = buildFileName config k
           savePngImage fileName (flockDraw config f)
           putStrLn fileName
-          flockRun' (k + 1) (flockUpdate f)
+          flockRun' (k + 1) (flockUpdateWithConfig (flockConfig config) f)
 
 main :: IO ()
 main = do
@@ -83,4 +85,6 @@ parseArgs as = parseArgs' as defaultAppConfig
     parseArgs' ("--width" : n : as') config = parseArgs' as' $ config {pictureWidth = read n}
     parseArgs' ("-w" : n : as') config = parseArgs' as' $ config {pictureWidth = read n}
     parseArgs' ("--output-dir" : d : as') config = parseArgs' as' $ config {imageDirectory = d}
+    parseArgs' ("--min-distance" : d : as') config = parseArgs' as' $ config {flockConfig = (flockConfig config) {flockConfigTooCloseDistance = read d}}
+    parseArgs' ("--max-distance" : d : as') config = parseArgs' as' $ config {flockConfig = (flockConfig config) {flockConfigFlockingDistance = read d}}
     parseArgs' _ config = config
