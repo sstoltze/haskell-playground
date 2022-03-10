@@ -27,7 +27,7 @@ runConsumer
       rpcRoutingKey = routingKey,
       rpcStorage = hashMap
     } =
-    void $ AMQP.consumeMsgs channel routingKey AMQP.NoAck putInHash
+    void $ AMQP.consumeMsgs channel routingKey AMQP.Ack putInHash
     where
       storeMessageBody cId val h = case Map.lookup cId h of
         Nothing -> undefined -- This should not happen
@@ -77,7 +77,8 @@ call client routingKey message = do
           { AMQP.msgBody = encodeProtobuf message,
             AMQP.msgCorrelationID = Just correlationId,
             AMQP.msgReplyTo = Just (rpcRoutingKey client),
-            AMQP.msgApplicationID = Just "haskell-rpc-client"
+            AMQP.msgApplicationID = Just "haskell-rpc-client",
+            AMQP.msgContentType = Just "application/octet-stream"
           }
   void $ AMQP.publishMsg (rpcChannel client) (AMQP.exchangeName directExchange) routingKey request
   reply <- readMVar v

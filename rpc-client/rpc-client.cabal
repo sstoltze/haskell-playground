@@ -64,6 +64,7 @@ executable rpc-client-exe
   main-is: Main.hs
   other-modules:
       Generate
+      Results
       Util
       Paths_rpc_client
   hs-source-dirs:

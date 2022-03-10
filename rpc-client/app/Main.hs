@@ -7,30 +7,31 @@ import           Client
 import           Configuration.Dotenv (defaultConfig, loadFile)
 import           Control.Concurrent
 import           Control.Monad
-import           Data.Maybe           (fromJust)
-import qualified Data.Text            as T
+-- import           Data.Maybe           (fromJust)
+-- import qualified Data.Text            as T
 import           Generate
 import qualified Proto.Test           as Test
-import           System.Environment   (lookupEnv)
+-- import           System.Environment   (lookupEnv)
+import           Results
 import           Util
 
 numberOfSenders :: Int
-numberOfSenders = 10
+numberOfSenders = 1
 
 main :: IO ()
 main = do
   void (loadFile defaultConfig)
   conn <- amqpConnectionFromEnv
   channel <- createChannel conn
-  client <- makeRpcClient channel
   results <- newResults
   putStrLn "ready"
   callThreads <- forM [1 .. numberOfSenders] $
     const $
-      forkIO $
+      forkIO $ do
+        client <- makeRpcClient channel
         forever $ do
-          request <- buildTestRequest
-          routingKey <- T.pack . fromJust <$> lookupEnv "ROUTING_KEY"
+          request <- generateTestRequest
+          let routingKey = "test-routing-key"
           reply <- call client routingKey request :: IO (Either String Test.TestResponse)
           putResult results reply
   printThread <- forkIO $
