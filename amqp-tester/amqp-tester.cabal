@@ -1,0 +1,115 @@
+cabal-version: 2.0
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           amqp-tester
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/sstoltze/amqp-tester#readme>
+homepage:       https://github.com/sstoltze/amqp-tester#readme
+bug-reports:    https://github.com/sstoltze/amqp-tester/issues
+author:         Sarah Stoltze
+maintainer:     sstoltze@gmail.com
+copyright:      2022 Sarah Stoltze
+license:        BSD3
+license-file:   LICENSE
+build-type:     Custom
+extra-source-files:
+    proto/test.proto
+
+source-repository head
+  type: git
+  location: https://github.com/sstoltze/amqp-tester
+
+custom-setup
+  setup-depends:
+      Cabal
+    , base
+    , proto-lens-setup
+
+library
+  exposed-modules:
+      Amqp
+      Lib
+      Protobuf
+      Proto.Test
+      Proto.Test_Fields
+  other-modules:
+      Paths_amqp_tester
+  autogen-modules:
+      Proto.Test
+      Proto.Test_Fields
+  hs-source-dirs:
+      src
+  build-tool-depends:
+      proto-lens-protoc:proto-lens-protoc
+  build-depends:
+      aeson
+    , amqp
+    , base
+    , bytestring
+    , containers
+    , dotenv
+    , microlens
+    , mtl
+    , proto-lens
+    , proto-lens-protobuf-types
+    , proto-lens-runtime
+    , random
+    , req
+    , text
+  default-language: Haskell2010
+
+executable amqp-tester-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_amqp_tester
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      proto-lens-protoc:proto-lens-protoc
+  build-depends:
+      aeson
+    , amqp
+    , amqp-tester
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , dotenv
+    , microlens
+    , mtl
+    , proto-lens
+    , proto-lens-protobuf-types
+    , random
+    , req
+    , text
+  default-language: Haskell2010
+
+test-suite amqp-tester-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_amqp_tester
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-tool-depends:
+      proto-lens-protoc:proto-lens-protoc
+  build-depends:
+      aeson
+    , amqp
+    , amqp-tester
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , dotenv
+    , microlens
+    , mtl
+    , proto-lens
+    , proto-lens-protobuf-types
+    , random
+    , req
+    , text
+  default-language: Haskell2010

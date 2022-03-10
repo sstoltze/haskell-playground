@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package amqp_test;
+
+import "google/protobuf/timestamp.proto";
+
+message TestRequest {
+  uint64 input = 1;
+}
+
+message TestResponse {
+  string response = 1;
+  google.protobuf.Timestamp time = 2;
+}

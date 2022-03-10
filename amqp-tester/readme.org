@@ -1,0 +1,7 @@
+#+AUTHOR: Sarah Stoltze
+#+EMAIL: sst@issuu.com
+#+DATE: 2022-03-10
+#+OPTIONS: toc:nil title:nil author:nil email:nil date:nil creator:nil
+* Amqp tester
+
+A small, very simple project for sending and receiving AMQP messages, made just to play around with stuff
