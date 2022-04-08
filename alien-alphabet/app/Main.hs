@@ -1,8 +1,8 @@
 module Main where
 
-import Digraph
-import System.IO (isEOF)
-import Data.Maybe (fromMaybe)
+import           Data.Maybe (fromMaybe)
+import           Digraph
+import           System.IO  (isEOF)
 
 main :: IO ()
 main = do
@@ -19,5 +19,5 @@ readInput = readInput' []
       if eof
         then return $ reverse acc
         else do
-        inputLine <- getLine
-        readInput' (inputLine : acc)
+          inputLine <- getLine
+          readInput' (inputLine : acc)
